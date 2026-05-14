@@ -7,44 +7,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
+/* 基礎樣式保持不變 */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padding-bottom:155px}
-
 .header{background:#fff;padding:24px 16px 20px;text-align:center;border-bottom:1px solid #e5e0da}
 .header-name{font-size:24px;font-weight:900;letter-spacing:1px;color:#1a1a1a}
 .header-sub{font-size:14px;color:#999;margin-top:6px}
-
 .cat-nav{background:#fff;border-bottom:1px solid #e5e0da;position:sticky;top:0;z-index:40}
 .cat-nav-inner{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 12px}
 .cat-nav-inner::-webkit-scrollbar{display:none}
 .cat-tab{flex-shrink:0;padding:14px 16px;font-size:15px;font-weight:500;color:#999;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;transition:color .15s,border-color .15s}
 .cat-tab.active{color:#c94c18;border-bottom-color:#c94c18;font-weight:700}
-
 .menu-body{padding:0 12px}
 .section-title{font-size:13px;font-weight:700;color:#999;letter-spacing:1.5px;padding:20px 4px 12px;text-transform:uppercase}
-
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
-
 .item-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e3dd;cursor:pointer;transition:box-shadow .15s;user-select:none;display:flex;flex-direction:column}
 .item-card:active{opacity:.82}
 .item-card:hover{box-shadow:0 3px 14px rgba(0,0,0,.09)}
-
-/* 圖片區塊樣式 */
 .item-photo-wrap{position:relative;width:100%;padding-top:72%;background:#f0ece6;overflow:hidden}
 .item-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-
 .item-badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;z-index:5}
 .item-hot-badge{background:#e8292f;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-new-badge{background:#f5a623;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-combo-badge{background:rgba(0,0,0,.52);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;line-height:1.6}
-
 .item-body{padding:14px 12px 16px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .item-name{font-size:15px;font-weight:700;line-height:1.35;color:#1a1a1a;margin-bottom:8px}
 .item-price-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
 .item-price{font-size:16px;font-weight:700;color:#c94c18}
 .item-price::before{content:'$';font-size:13px;margin-right:1px}
 .item-add{width:32px;height:32px;background:#c94c18;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-
 .cart-wrap{padding:16px 12px 0}
 .cart-box{background:#fff;border-radius:12px;border:1px solid #e8e3dd;overflow:hidden}
 .cart-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #ede8e2}
@@ -52,7 +43,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .cart-badge{background:#c94c18;color:#fff;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;display:none}
 .cart-clear{font-size:13px;color:#bbb;background:none;border:none;cursor:pointer;font-family:inherit}
 .cart-empty{padding:28px 16px;text-align:center;color:#ccc;font-size:14px;line-height:1.8}
-
 .cart-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #f0ece6;gap:12px;animation:fadeUp .2s ease}
 .cart-item:last-child{border-bottom:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
@@ -65,7 +55,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .cq-btn.minus{border-color:#f5c4b4;color:#c94c18}
 .cq-qty{font-size:14px;font-weight:700;min-width:20px;text-align:center}
 .ci-price{font-size:14px;font-weight:700;color:#1a1a1a;width:50px;text-align:right;flex-shrink:0}
-
 #checkout-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e0da;padding:10px 16px max(12px,env(safe-area-inset-bottom));z-index:80}
 .disc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .disc-tag{font-size:11px;background:#edf9f2;color:#27ae60;border:1px solid #b9e8cf;border-radius:4px;padding:2px 8px;font-weight:700}
@@ -74,8 +63,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .bar-label{font-size:11px;color:#aaa}
 .bar-amount{font-size:24px;font-weight:900;color:#1a1a1a;line-height:1.1}
 .bar-copy{background:#c94c18;color:#fff;border:none;border-radius:8px;padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
-.bar-copy:active{background:#a83c12}
-
 #modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:100;align-items:flex-end;justify-content:center}
 #modal-box{background:#fff;width:100%;border-radius:20px 20px 0 0;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:slideUp .24s cubic-bezier(.2,.9,.4,1);max-height:88vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -84,7 +71,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .modal-thumb{width:62px;height:62px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#f0ece6}
 .modal-item-name{font-size:20px;font-weight:900}
 .modal-item-price{font-size:14px;color:#c94c18;font-weight:700;margin-top:4px}
-
 .modal-body{padding:0 20px}
 .opt-group{padding:14px 0;border-bottom:1px solid #f0ece6}
 .opt-group:last-of-type{border:none}
@@ -92,17 +78,14 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .opt-chips{display:flex;flex-wrap:wrap;gap:8px}
 .opt-chip{padding:8px 18px;border:1.5px solid #ddd;background:#fff;border-radius:99px;font-size:14px;font-family:inherit;color:#555;cursor:pointer;transition:all .12s}
 .opt-chip.active{border-color:#c94c18;background:#fef2ee;color:#c94c18;font-weight:700}
-
 .qty-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #f0ece6}
 .qty-label{font-size:15px;font-weight:700}
 .qty-ctrl{display:flex;align-items:center;gap:14px}
 .qty-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#333;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #modal-qty{font-size:20px;font-weight:900;min-width:24px;text-align:center}
-
 .modal-footer{display:flex;gap:10px;padding:12px 20px;border-top:1px solid #f0ece6}
 .m-cancel{padding:13px 18px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:15px;font-weight:700;font-family:inherit;color:#999;cursor:pointer}
 .m-confirm{flex:1;padding:13px;background:#c94c18;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
-
 #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(20,20,20,.85);color:#fff;font-size:13px;padding:10px 20px;border-radius:8px;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;z-index:200}
 #toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 </style>
@@ -146,12 +129,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
   </div>
 </div>
 
-<!-- Modal -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="modal-drag"></div>
     <div class="modal-item-row">
-      <!-- 彈出視窗的小縮圖 -->
       <img class="modal-thumb" id="modal-thumb" src="" alt="" onerror="this.style.display='none'">
       <div>
         <div class="modal-item-name" id="modal-name">品項</div>
@@ -159,6 +140,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
       </div>
     </div>
     <div class="modal-body">
+      <div class="opt-group" id="size-group" style="display:none">
+        <div class="opt-label">規格（單選）</div>
+        <div class="opt-chips" id="size-opts"></div>
+      </div>
+      
       <div class="opt-group">
         <div class="opt-label">基本調味（可複選）</div>
         <div class="opt-chips" id="flavor-opts">
@@ -204,8 +190,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 <textarea id="copy-area" style="position:absolute;left:-9999px"></textarea>
 
 <script>
-// 1. 在這裡設定照片路徑為品名的中文名稱
-// 預設副檔名為 .jpg，如果您的照片是 png 請將 '.jpg' 改成 '.png'
+// 1. 照片定義 (整合 ID)
 const PHOTOS = {
   xiangsuji: './images/香酥雞.png',
   paigu: './images/排骨酥.png',
@@ -219,63 +204,54 @@ const PHOTOS = {
   sweetfry: './images/地瓜薯條.png',
   onion: './images/圈圈.png',
   fries: './images/薯條.png',
-  rice: './images/米疙瘩.png',
-  meatball: './images/小肉豆.png',
+  rice_d: './images/米疙瘩.png',
+  meat_b: './images/小肉豆.png',
   hash: './images/微笑薯餅.png',
   hotdog_s: './images/熱狗腸.png'
 };
 
-// 照片鍵值對應表
-const ITEM_PHOTO = {
-  c_small:'xiangsuji', c_mid:'xiangsuji', c_large:'xiangsuji',
-  p_small:'paigu', p_mid:'paigu', p_large:'paigu',
-  t_small:'sanjiao', t_mid:'sanjiao', t_large:'sanjiao',
-  cart_small:'ruangu', cart_mid:'ruangu', cart_large:'ruangu',
-  s_small:'jianjian', s_mid:'jianjian', s_large:'jianjian',
-  wing:'wing', drum:'drum', fillet:'fillet',
-  hotdog_b:'hotdog_b', sweet_s:'sweetfry', sweet_l:'sweetfry',
-  onion_s:'onion', onion_l:'onion', fries_s:'fries', fries_l:'fries',
-  rice_d:'rice', meat_b:'meatball', hash:'hash', hotdog_s:'hotdog_s'
-};
-
-// 標籤定義
-const BADGE = {
-  c_small:'hot',c_mid:'hot',c_large:'hot',
-  p_small:'hot',p_mid:'hot',p_large:'hot',
-  t_small:'hot',t_mid:'hot',t_large:'hot',
-  s_small:'new',s_mid:'new',s_large:'new'
-};
-
+// 2. 菜單資料結構 (整合規格)
 const menu = [
-  {id:'c_small',name:'香酥雞 (小)',price:50,category:'招牌必點'},
-  {id:'c_mid',name:'香酥雞 (中)',price:100,category:'招牌必點'},
-  {id:'c_large',name:'香酥雞 (大)',price:150,category:'招牌必點'},
-  {id:'p_small',name:'排骨酥 (小)',price:50,category:'招牌必點'},
-  {id:'p_mid',name:'排骨酥 (中)',price:100,category:'招牌必點'},
-  {id:'p_large',name:'排骨酥 (大)',price:150,category:'招牌必點'},
-  {id:'t_small',name:'三角骨 (小)',price:50,category:'招牌必點'},
-  {id:'t_mid',name:'三角骨 (中)',price:100,category:'招牌必點'},
-  {id:'t_large',name:'三角骨 (大)',price:150,category:'招牌必點'},
-  {id:'cart_small',name:'軟骨酥 (小)',price:50,category:'招牌必點'},
-  {id:'cart_mid',name:'軟骨酥 (中)',price:100,category:'招牌必點'},
-  {id:'cart_large',name:'軟骨酥 (大)',price:150,category:'招牌必點'},
-  {id:'s_small',name:'嫩肩骨 (小)',price:50,category:'招牌必點'},
-  {id:'s_mid',name:'嫩肩骨 (中)',price:100,category:'招牌必點'},
-  {id:'s_large',name:'嫩肩骨 (大)',price:150,category:'招牌必點'},
-  {id:'wing',name:'三節翅',price:25,isCombo:true,comboQty:5,comboPrice:100,category:'招牌必點'},
-  {id:'drum',name:'小棒腿',price:15,isCombo:true,comboQty:7,comboPrice:100,category:'招牌必點'},
-  {id:'fillet',name:'雞排',price:65,category:'招牌必點'},
-  {id:'hotdog_b',name:'裹粉熱狗',price:20,category:'酥脆點心 & 分享餐'},
-  {id:'sweet_s',name:'地瓜薯條 (小)',price:50,category:'酥脆點心 & 分享餐'},
-  {id:'sweet_l',name:'地瓜薯條 (大)',price:100,category:'酥脆點心 & 分享餐'},
-  {id:'onion_s',name:'圈圈 (小)',price:50,category:'酥脆點心 & 分享餐'},
-  {id:'onion_l',name:'圈圈 (大)',price:100,category:'酥脆點心 & 分享餐'},
-  {id:'fries_s',name:'薯條 (小)',price:50,category:'酥脆點心 & 分享餐'},
-  {id:'fries_l',name:'薯條 (大)',price:100,category:'酥脆點心 & 分享餐'},
-  {id:'rice_d',name:'米疙瘩',price:35,category:'酥脆點心 & 分享餐'},
-  {id:'meat_b',name:'小肉豆',price:30,category:'酥脆點心 & 分享餐'},
-  {id:'hash',name:'微笑薯餅',price:50,category:'酥脆點心 & 分享餐'},
-  {id:'hotdog_s',name:'熱狗腸',price:25,category:'酥脆點心 & 分享餐'}
+  {
+    id: 'xiangsuji', name: '香酥雞', category: '招牌必點', hot: true,
+    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
+  },
+  {
+    id: 'paigu', name: '排骨酥', category: '招牌必點', hot: true,
+    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
+  },
+  {
+    id: 'sanjiao', name: '三角骨', category: '招牌必點', hot: true,
+    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
+  },
+  {
+    id: 'ruangu', name: '軟骨酥', category: '招牌必點',
+    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
+  },
+  {
+    id: 'jianjian', name: '嫩肩骨', category: '招牌必點', new: true,
+    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
+  },
+  {id:'wing', name:'三節翅', price:25, isCombo:true, comboQty:5, comboPrice:100, category:'招牌必點'},
+  {id:'drum', name:'小棒腿', price:15, isCombo:true, comboQty:7, comboPrice:100, category:'招牌必點'},
+  {id:'fillet', name:'雞排', price:65, category:'招牌必點'},
+  {id:'hotdog_b', name:'裹粉熱狗', price:20, category:'酥脆點心 & 分享餐'},
+  {
+    id: 'sweetfry', name: '地瓜薯條', category: '酥脆點心 & 分享餐',
+    options: [{label:'小', price:50}, {label:'大', price:100}]
+  },
+  {
+    id: 'onion', name: '圈圈', category: '酥脆點心 & 分享餐',
+    options: [{label:'小', price:50}, {label:'大', price:100}]
+  },
+  {
+    id: 'fries', name: '薯條', category: '酥脆點心 & 分享餐',
+    options: [{label:'小', price:50}, {label:'大', price:100}]
+  },
+  {id:'rice_d', name:'米疙瘩', price:35, category:'酥脆點心 & 分享餐'},
+  {id:'meat_b', name:'小肉豆', price:30, category:'酥脆點心 & 分享餐'},
+  {id:'hash', name:'微笑薯餅', price:50, category:'酥脆點心 & 分享餐'},
+  {id:'hotdog_s', name:'熱狗腸', price:25, category:'酥脆點心 & 分享餐'}
 ];
 
 const CATS = ['招牌必點','酥脆點心 & 分享餐'];
@@ -315,11 +291,10 @@ function initMenu() {
       container.appendChild(sec);
     }
     
-    const photoKey = ITEM_PHOTO[item.id];
-    const photoSrc = PHOTOS[photoKey] || '';
-    const badge = BADGE[item.id];
-    let badgeHtml = badge==='hot'?'<span class="item-hot-badge">熱銷</span>':badge==='new'?'<span class="item-new-badge">NEW</span>':'';
+    const photoSrc = PHOTOS[item.id] || '';
+    let badgeHtml = item.hot?'<span class="item-hot-badge">熱銷</span>':item.new?'<span class="item-new-badge">NEW</span>':'';
     let comboBadge = item.isCombo?`<span class="item-combo-badge">${item.comboQty}入${item.comboPrice}</span>`:'';
+    let displayPrice = item.options ? item.options[0].price : item.price;
     
     const card = document.createElement('div');
     card.className='item-card';
@@ -331,7 +306,7 @@ function initMenu() {
       <div class="item-body">
         <div class="item-name">${item.name}</div>
         <div class="item-price-row">
-          <div class="item-price">${item.price}</div>
+          <div class="item-price">${displayPrice}${item.options?'↑':''}</div>
           <button class="item-add" aria-label="新增">+</button>
         </div>
       </div>`;
@@ -344,6 +319,7 @@ function initMenu() {
 
 function setupOptButtons() {
   document.querySelectorAll('.opt-chip').forEach(btn => {
+    if(btn.closest('#size-opts')) return; // 規格按鈕另外在 openModal 綁定
     btn.addEventListener('click', function() {
       const type=this.dataset.type, val=this.dataset.val;
       if(type==='flavor') {
@@ -366,17 +342,52 @@ function setupOptButtons() {
 function openModal(item) {
   document.body.style.overflow='hidden';
   currentItem=item; currentQty=1;
-  tempOpts={flavors:['胡椒'],spicy:'不辣',cut:'不剪'};
   
-  const photoSrc = PHOTOS[ITEM_PHOTO[item.id]] || '';
+  // 初始化規格
+  if(item.options) {
+    tempOpts.size = item.options[0].label;
+    tempOpts.currentPrice = item.options[0].price;
+  } else {
+    tempOpts.size = null;
+    tempOpts.currentPrice = item.price;
+  }
+
+  tempOpts.flavors=['胡椒']; tempOpts.spicy='不辣'; tempOpts.cut='不剪';
+  
+  const photoSrc = PHOTOS[item.id] || '';
   const modalThumb = document.getElementById('modal-thumb');
   modalThumb.src = photoSrc;
   modalThumb.style.display = photoSrc ? 'block' : 'none';
 
   document.getElementById('modal-name').textContent=item.name;
-  document.getElementById('modal-price').textContent=`單價 ${item.price}`;
+  document.getElementById('modal-price').textContent=`單價 ${tempOpts.currentPrice}`;
   document.getElementById('modal-qty').textContent=1;
-  document.querySelectorAll('.opt-chip').forEach(b=>b.classList.remove('active'));
+
+  // 處理規格按鈕渲染
+  const sizeGroup = document.getElementById('size-group');
+  const sizeOpts = document.getElementById('size-opts');
+  sizeOpts.innerHTML = '';
+  if(item.options) {
+    sizeGroup.style.display = 'block';
+    item.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-chip' + (opt.label === tempOpts.size ? ' active' : '');
+      btn.textContent = opt.label;
+      btn.onclick = () => {
+        tempOpts.size = opt.label;
+        tempOpts.currentPrice = opt.price;
+        document.querySelectorAll('#size-opts .opt-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('modal-price').textContent = `單價 ${opt.price}`;
+      };
+      sizeOpts.appendChild(btn);
+    });
+  } else {
+    sizeGroup.style.display = 'none';
+  }
+
+  // 重置其他按鈕外觀
+  document.querySelectorAll('#flavor-opts .opt-chip, #spicy-opts .opt-chip, #cut-opts .opt-chip').forEach(b=>b.classList.remove('active'));
   document.querySelector('[data-val="胡椒"]')?.classList.add('active');
   document.querySelector('[data-val="不辣"]')?.classList.add('active');
   document.querySelector('[data-val="不剪"]')?.classList.add('active');
@@ -398,16 +409,33 @@ function confirmAdd() {
   if(tempOpts.spicy!=='不辣') parts.push(tempOpts.spicy);
   if(currentItem.id==='fillet'&&tempOpts.cut==='要剪') parts.push('要剪');
   const optStr=parts.length?parts.join(', '):'原味';
-  const ex=cart.find(c=>c.id===currentItem.id&&c.optString===optStr);
-  if(ex) ex.qty=Math.min(ex.qty+currentQty,99);
-  else cart.push({
-    id:currentItem.id, name:currentItem.name, price:currentItem.price,
-    qty:Math.min(currentQty,99), optString:optStr, photoKey:ITEM_PHOTO[currentItem.id],
-    isCombo:currentItem.isCombo, comboQty:currentItem.comboQty, comboPrice:currentItem.comboPrice
-  });
+  
+  const displayName = tempOpts.size ? `${currentItem.name} (${tempOpts.size})` : currentItem.name;
+  
+  // 檢查購物車內是否有完全相同的品項 (含 ID、規格、口味)
+  const cartKey = currentItem.id + (tempOpts.size || '') + optStr;
+  const ex = cart.find(c => (c.id + (c.size || '') + c.optString) === cartKey);
+
+  if(ex) {
+    ex.qty = Math.min(ex.qty + currentQty, 99);
+  } else {
+    cart.push({
+      id: currentItem.id,
+      name: currentItem.name,
+      size: tempOpts.size,
+      displayName: displayName,
+      price: tempOpts.currentPrice,
+      qty: Math.min(currentQty, 99),
+      optString: optStr,
+      photoKey: currentItem.id,
+      isCombo: currentItem.isCombo,
+      comboQty: currentItem.comboQty,
+      comboPrice: currentItem.comboPrice
+    });
+  }
   closeModal();
   updateCart();
-  showToast(`✓ 已加入 ${currentItem.name}`);
+  showToast(`✓ 已加入 ${displayName}`);
 }
 
 function updateCart() {
@@ -424,7 +452,7 @@ function updateCart() {
     <div class="cart-item">
       <img class="ci-thumb" src="${PHOTOS[c.photoKey]||''}" alt="${c.name}" onerror="this.style.display='none'">
       <div class="ci-info">
-        <div class="ci-name">${c.name}</div>
+        <div class="ci-name">${c.displayName}</div>
         <div class="ci-opts">[ ${c.optString} ]</div>
       </div>
       <div class="ci-ctrl">
@@ -449,8 +477,11 @@ document.getElementById('cart-list').addEventListener('click', e=>{
 });
 
 function calcTotal() {
-  let total=0; currentDiscounts=[]; const idCounts={};
+  let total=0; currentDiscounts=[]; 
+  // 計算組合折扣 (三節翅、小棒腿)
+  const idCounts={};
   cart.forEach(c=>{idCounts[c.id]=(idCounts[c.id]||0)+c.qty; total+=c.price*c.qty;});
+  
   for(const id in idCounts) {
     const m=menu.find(x=>x.id===id);
     if(m?.isCombo) {
@@ -483,7 +514,7 @@ function showToast(msg) {
 async function copyOrder() {
   if(!cart.length){showToast('請先選擇品項');return;}
   const lines=['📋 【馥味香 點餐明細】','─'.repeat(20)];
-  cart.forEach(c=>{lines.push(`● ${c.name} × ${c.qty}`);lines.push(`  └ [${c.optString}]`);});
+  cart.forEach(c=>{lines.push(`● ${c.displayName} × ${c.qty}`);lines.push(`  └ [${c.optString}]`);});
   lines.push('─'.repeat(20));
   currentDiscounts.forEach(d=>lines.push(`✓ ${d.name} 折扣 -$${d.amount}`));
   lines.push(`💰 合計：$${document.getElementById('total-price').textContent} 元`);
