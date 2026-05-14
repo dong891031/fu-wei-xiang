@@ -182,7 +182,7 @@ html { background: #f5f3f0; }
       <div class="bar-label">合計金額</div>
       <div class="bar-amount">$<span id="total-price">0</span></div>
     </div>
-    <button class="bar-copy" id="copy-btn">複製 LINE 訂單</button>
+    <button class="bar-copy" id="copy-btn">送出訂單至 LINE</button>
   </div>
 </div>
 
@@ -563,6 +563,8 @@ function showToast(msg) {
 
 async function copyOrder() {
   if(!cart.length){showToast('請先選擇品項');return;}
+  
+  // 1. 組合訂單文字
   const lines=['📋 【馥味香 點餐明細】','─'.repeat(20)];
   cart.forEach(c=>{lines.push(`● ${c.displayName} × ${c.qty}`);lines.push(`  └ [${c.optString}]`);});
   lines.push('─'.repeat(20));
@@ -570,9 +572,28 @@ async function copyOrder() {
   lines.push(`💰 合計：$${document.getElementById('total-price').textContent} 元`);
   lines.push(`⏰ ${new Date().toLocaleTimeString('zh-TW')}`);
   const text=lines.join('\n');
-  try{await navigator.clipboard.writeText(text);showToast('已複製！請貼到 LINE');}
-  catch{const a=document.getElementById('copy-area');a.value=text;a.select();document.execCommand('copy');showToast('已複製！');}
+  
+  // 2. 先將文字複製到剪貼簿 (避免部分手機瀏覽器阻擋跳轉時的備用方案)
+  try { await navigator.clipboard.writeText(text); }
+  catch { 
+    const a=document.getElementById('copy-area');
+    a.value=text; a.select(); document.execCommand('copy'); 
+  }
+  
+  showToast('訂單已產生！正在為您開啟 LINE...');
+
+  // 3. 設定你們的 LINE 官方帳號 ID
+  const lineId = '@187ppubm'; 
+  
+  // 4. 使用 LINE 官方提供的 oaMessage 連結格式跳轉
+  const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(text)}`;
+  
+  // 延遲 0.8 秒跳轉，讓使用者能看清楚提示訊息
+  setTimeout(() => {
+    window.location.href = lineUrl;
+  }, 800);
 }
+
 
 document.getElementById('clear-btn').addEventListener('click',resetCart);
 document.getElementById('copy-btn').addEventListener('click',copyOrder);
