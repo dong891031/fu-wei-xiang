@@ -7,41 +7,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* 基礎樣式保持不變 */
+/* 基礎樣式 */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padding-bottom:155px}
+
+/* 新增：為大螢幕限制最大寬度並置中 */
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:#f5f3f0;
+  color:#1a1a1a;
+  padding-bottom:155px;
+  max-width: 800px; /* 電腦版最大寬度 */
+  margin: 0 auto;   /* 畫面置中 */
+  box-shadow: 0 0 20px rgba(0,0,0,0.03); /* 電腦版兩側微微陰影 */
+  min-height: 100vh;
+  position: relative;
+  background-color: #fff; 
+}
+/* 讓外圍背景保持灰色，內容區塊白色 */
+html { background: #f5f3f0; } 
+
 .header{background:#fff;padding:24px 16px 20px;text-align:center;border-bottom:1px solid #e5e0da}
 .header-name{font-size:24px;font-weight:900;letter-spacing:1px;color:#1a1a1a}
 .header-sub{font-size:14px;color:#999;margin-top:6px}
+
 .cat-nav{background:#fff;border-bottom:1px solid #e5e0da;position:sticky;top:0;z-index:40}
 .cat-nav-inner{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 12px}
 .cat-nav-inner::-webkit-scrollbar{display:none}
 .cat-tab{flex-shrink:0;padding:14px 16px;font-size:15px;font-weight:500;color:#999;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;transition:color .15s,border-color .15s}
 .cat-tab.active{color:#c94c18;border-bottom-color:#c94c18;font-weight:700}
+
 .menu-body{padding:0 12px}
 .section-title{font-size:13px;font-weight:700;color:#999;letter-spacing:1.5px;padding:20px 4px 12px;text-transform:uppercase}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
-.item-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e3dd;cursor:pointer;transition:box-shadow .15s;user-select:none;display:flex;flex-direction:column}
-.item-card:active{opacity:.82}
-.item-card:hover{box-shadow:0 3px 14px rgba(0,0,0,.09)}
+
+/* 新增：自適應 Grid 排版，最小 160px 一格，空間夠會自動增加欄數 */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+  gap:12px;
+  margin-bottom:8px;
+}
+
+.item-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e3dd;cursor:pointer;transition:box-shadow .15s, transform .15s;user-select:none;display:flex;flex-direction:column}
+.item-card:active{opacity:.82; transform:scale(0.98)}
+.item-card:hover{box-shadow:0 6px 16px rgba(0,0,0,.08)}
+
 .item-photo-wrap{position:relative;width:100%;padding-top:72%;background:#f0ece6;overflow:hidden}
-.item-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.item-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .3s}
+.item-card:hover .item-photo{transform:scale(1.05)} /* 電腦版滑鼠游標懸浮動畫 */
+
 .item-badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;z-index:5}
 .item-hot-badge{background:#e8292f;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-new-badge{background:#f5a623;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-combo-badge{background:rgba(0,0,0,.52);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;line-height:1.6}
+
 .item-body{padding:14px 12px 16px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .item-name{font-size:15px;font-weight:700;line-height:1.35;color:#1a1a1a;margin-bottom:8px}
 .item-price-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
 .item-price{font-size:16px;font-weight:700;color:#c94c18}
 .item-price::before{content:'$';font-size:13px;margin-right:1px}
-.item-add{width:32px;height:32px;background:#c94c18;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.item-add{width:32px;height:32px;background:#c94c18;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.item-add:hover{background:#a83c12}
+
 .cart-wrap{padding:16px 12px 0}
 .cart-box{background:#fff;border-radius:12px;border:1px solid #e8e3dd;overflow:hidden}
 .cart-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #ede8e2}
 .cart-head-left{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
 .cart-badge{background:#c94c18;color:#fff;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;display:none}
-.cart-clear{font-size:13px;color:#bbb;background:none;border:none;cursor:pointer;font-family:inherit}
+.cart-clear{font-size:13px;color:#bbb;background:none;border:none;cursor:pointer;font-family:inherit;transition:color .15s}
+.cart-clear:hover{color:#888}
 .cart-empty{padding:28px 16px;text-align:center;color:#ccc;font-size:14px;line-height:1.8}
 .cart-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #f0ece6;gap:12px;animation:fadeUp .2s ease}
 .cart-item:last-child{border-bottom:none}
@@ -51,21 +84,41 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .ci-name{font-size:14px;font-weight:700}
 .ci-opts{font-size:12px;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ci-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.cq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#666;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#666;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s, color .15s}
+.cq-btn:hover{border-color:#999}
 .cq-btn.minus{border-color:#f5c4b4;color:#c94c18}
 .cq-qty{font-size:14px;font-weight:700;min-width:20px;text-align:center}
 .ci-price{font-size:14px;font-weight:700;color:#1a1a1a;width:50px;text-align:right;flex-shrink:0}
-#checkout-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e0da;padding:10px 16px max(12px,env(safe-area-inset-bottom));z-index:80}
+
+/* 新增：底部結帳列加入置中與最大寬度 */
+#checkout-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:800px;background:#fff;border-top:1px solid #e5e0da;padding:10px 16px max(12px,env(safe-area-inset-bottom));z-index:80;box-shadow:0 -2px 10px rgba(0,0,0,.03)}
 .disc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .disc-tag{font-size:11px;background:#edf9f2;color:#27ae60;border:1px solid #b9e8cf;border-radius:4px;padding:2px 8px;font-weight:700}
 .bar-row{display:flex;align-items:center;gap:14px}
 .bar-total{flex:1}
 .bar-label{font-size:11px;color:#aaa}
 .bar-amount{font-size:24px;font-weight:900;color:#1a1a1a;line-height:1.1}
-.bar-copy{background:#c94c18;color:#fff;border:none;border-radius:8px;padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:100;align-items:flex-end;justify-content:center}
-#modal-box{background:#fff;width:100%;border-radius:20px 20px 0 0;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:slideUp .24s cubic-bezier(.2,.9,.4,1);max-height:88vh;overflow-y:auto}
+.bar-copy{background:#c94c18;color:#fff;border:none;border-radius:8px;padding:13px 22px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s}
+.bar-copy:hover{background:#b84112}
+.bar-copy:active{background:#a83c12}
+
+/* 彈出視窗自適應優化 */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+#modal-box{background:#fff;width:100%;max-width:500px;border-radius:20px 20px 0 0;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:slideUp .24s cubic-bezier(.2,.9,.4,1);max-height:88vh;overflow-y:auto}
+
+/* 平板與電腦版的 Modal 樣式 */
+@media (min-width: 600px) {
+  #modal-overlay { align-items: center; } /* 垂直置中 */
+  #modal-box { 
+    border-radius: 20px; /* 四邊圓角 */
+    animation: popIn .2s ease-out; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  .modal-drag { display: none; } /* 隱藏手機版的拖曳橫條 */
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+
 .modal-drag{width:36px;height:4px;background:#ddd;border-radius:99px;margin:12px auto 0}
 .modal-item-row{display:flex;align-items:center;gap:14px;padding:16px 20px 14px;border-bottom:1px solid #f0ece6;text-align:left}
 .modal-thumb{width:62px;height:62px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#f0ece6}
@@ -77,15 +130,19 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 .opt-label{font-size:12px;font-weight:700;color:#888;letter-spacing:.8px;margin-bottom:10px}
 .opt-chips{display:flex;flex-wrap:wrap;gap:8px}
 .opt-chip{padding:8px 18px;border:1.5px solid #ddd;background:#fff;border-radius:99px;font-size:14px;font-family:inherit;color:#555;cursor:pointer;transition:all .12s}
+.opt-chip:hover{border-color:#b5b5b5}
 .opt-chip.active{border-color:#c94c18;background:#fef2ee;color:#c94c18;font-weight:700}
 .qty-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid #f0ece6}
 .qty-label{font-size:15px;font-weight:700}
 .qty-ctrl{display:flex;align-items:center;gap:14px}
-.qty-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#333;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.qty-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#333;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
+.qty-btn:hover{border-color:#999}
 #modal-qty{font-size:20px;font-weight:900;min-width:24px;text-align:center}
 .modal-footer{display:flex;gap:10px;padding:12px 20px;border-top:1px solid #f0ece6}
-.m-cancel{padding:13px 18px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:15px;font-weight:700;font-family:inherit;color:#999;cursor:pointer}
-.m-confirm{flex:1;padding:13px;background:#c94c18;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.m-cancel{padding:13px 18px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:15px;font-weight:700;font-family:inherit;color:#999;cursor:pointer;transition:background .15s}
+.m-cancel:hover{background:#f5f5f5}
+.m-confirm{flex:1;padding:13px;background:#c94c18;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s}
+.m-confirm:hover{background:#b84112}
 #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(20,20,20,.85);color:#fff;font-size:13px;padding:10px 20px;border-radius:8px;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;z-index:200}
 #toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 </style>
@@ -190,7 +247,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:#f5f3f0;color:#1a1a1a;padd
 <textarea id="copy-area" style="position:absolute;left:-9999px"></textarea>
 
 <script>
-// 1. 照片定義 (整合 ID)
 const PHOTOS = {
   xiangsuji: './images/香酥雞.png',
   paigu: './images/排骨酥.png',
@@ -210,7 +266,6 @@ const PHOTOS = {
   hotdog_s: './images/熱狗腸.png'
 };
 
-// 2. 菜單資料結構 (整合規格)
 const menu = [
   {
     id: 'xiangsuji', name: '香酥雞', category: '招牌必點', hot: true,
@@ -319,7 +374,7 @@ function initMenu() {
 
 function setupOptButtons() {
   document.querySelectorAll('.opt-chip').forEach(btn => {
-    if(btn.closest('#size-opts')) return; // 規格按鈕另外在 openModal 綁定
+    if(btn.closest('#size-opts')) return; 
     btn.addEventListener('click', function() {
       const type=this.dataset.type, val=this.dataset.val;
       if(type==='flavor') {
@@ -343,7 +398,6 @@ function openModal(item) {
   document.body.style.overflow='hidden';
   currentItem=item; currentQty=1;
   
-  // 初始化規格
   if(item.options) {
     tempOpts.size = item.options[0].label;
     tempOpts.currentPrice = item.options[0].price;
@@ -363,7 +417,6 @@ function openModal(item) {
   document.getElementById('modal-price').textContent=`單價 ${tempOpts.currentPrice}`;
   document.getElementById('modal-qty').textContent=1;
 
-  // 處理規格按鈕渲染
   const sizeGroup = document.getElementById('size-group');
   const sizeOpts = document.getElementById('size-opts');
   sizeOpts.innerHTML = '';
@@ -386,7 +439,6 @@ function openModal(item) {
     sizeGroup.style.display = 'none';
   }
 
-  // 重置其他按鈕外觀
   document.querySelectorAll('#flavor-opts .opt-chip, #spicy-opts .opt-chip, #cut-opts .opt-chip').forEach(b=>b.classList.remove('active'));
   document.querySelector('[data-val="胡椒"]')?.classList.add('active');
   document.querySelector('[data-val="不辣"]')?.classList.add('active');
@@ -412,7 +464,6 @@ function confirmAdd() {
   
   const displayName = tempOpts.size ? `${currentItem.name} (${tempOpts.size})` : currentItem.name;
   
-  // 檢查購物車內是否有完全相同的品項 (含 ID、規格、口味)
   const cartKey = currentItem.id + (tempOpts.size || '') + optStr;
   const ex = cart.find(c => (c.id + (c.size || '') + c.optString) === cartKey);
 
@@ -478,7 +529,6 @@ document.getElementById('cart-list').addEventListener('click', e=>{
 
 function calcTotal() {
   let total=0; currentDiscounts=[]; 
-  // 計算組合折扣 (三節翅、小棒腿)
   const idCounts={};
   cart.forEach(c=>{idCounts[c.id]=(idCounts[c.id]||0)+c.qty; total+=c.price*c.qty;});
   
