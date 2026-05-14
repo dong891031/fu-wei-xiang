@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>馥味香 點餐計算機</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; padding-bottom: 100px; margin: 0; }
+        h2 { color: #d35400; text-align: center; }
+        .category-title { background-color: #f39c12; color: white; padding: 5px 10px; border-radius: 5px; margin-top: 20px; display: inline-block; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+        .item-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .item-name { font-weight: bold; margin-bottom: 5px; font-size: 16px; }
+        .item-price { color: #e74c3c; font-size: 14px; margin-bottom: 10px; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 10px; }
+        button { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 5px 15px; font-size: 18px; border-radius: 5px; cursor: pointer; }
+        button:active { background-color: #bdc3c7; }
+        .qty { font-size: 18px; font-weight: bold; width: 20px; display: inline-block; }
+        #checkout-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
+        #reset-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>🍗 馥味香 結帳計算機</h2>
+
+    <div id="menu-container"></div>
+
+    <div id="checkout-bar">
+        <button id="reset-btn" onclick="resetAll()">清除重算</button>
+        <div>總計: $<span id="total-price">0</span></div>
+    </div>
+
+    <script>
+        const menu = [
+            // 招牌必點 - 尺寸類
+            { id: 'c_small', name: '香酥雞 (小)', price: 50, category: '招牌必點' },
+            { id: 'c_mid', name: '香酥雞 (中)', price: 100, category: '招牌必點' },
+            { id: 'c_large', name: '香酥雞 (大)', price: 150, category: '招牌必點' },
+            { id: 'p_small', name: '排骨酥 (小)', price: 50, category: '招牌必點' },
+            { id: 'p_mid', name: '排骨酥 (中)', price: 100, category: '招牌必點' },
+            { id: 'p_large', name: '排骨酥 (大)', price: 150, category: '招牌必點' },
+            { id: 't_small', name: '三角骨 (小)', price: 50, category: '招牌必點' },
+            { id: 't_mid', name: '三角骨 (中)', price: 100, category: '招牌必點' },
+            { id: 't_large', name: '三角骨 (大)', price: 150, category: '招牌必點' },
+            { id: 'cart_small', name: '軟骨酥 (小)', price: 50, category: '招牌必點' },
+            { id: 'cart_mid', name: '軟骨酥 (中)', price: 100, category: '招牌必點' },
+            { id: 'cart_large', name: '軟骨酥 (大)', price: 150, category: '招牌必點' },
+            { id: 's_small', name: '嫩肩骨 (小)', price: 50, category: '招牌必點' },
+            { id: 's_mid', name: '嫩肩骨 (中)', price: 100, category: '招牌必點' },
+            { id: 's_large', name: '嫩肩骨 (大)', price: 150, category: '招牌必點' },
+            
+            // 招牌必點 - 特殊計價類
+            { id: 'wing', name: '三節翅', price: 25, isCombo: true, comboQty: 5, comboPrice: 100, note: '$25/隻, 100/5隻', category: '招牌必點' },
+            { id: 'drum', name: '小棒腿', price: 15, isCombo: true, comboQty: 7, comboPrice: 100, note: '$15/隻, 100/7隻', category: '招牌必點' },
+            { id: 'fillet', name: '雞排', price: 65, category: '招牌必點' },
+
+            // 酥脆點心 & 分享餐
+            { id: 'hotdog_b', name: '裹粉熱狗', price: 20, category: '酥脆點心 & 分享餐' },
+            { id: 'sweet_s', name: '地瓜薯條 (小)', price: 50, category: '酥脆點心 & 分享餐' },
+            { id: 'sweet_l', name: '地瓜薯條 (大)', price: 100, category: '酥脆點心 & 分享餐' },
+            { id: 'onion_s', name: '圈圈 (小)', price: 50, category: '酥脆點心 & 分享餐' },
+            { id: 'onion_l', name: '圈圈 (大)', price: 100, category: '酥脆點心 & 分享餐' },
+            { id: 'fries_s', name: '薯條 (小)', price: 50, category: '酥脆點心 & 分享餐' },
+            { id: 'fries_l', name: '薯條 (大)', price: 100, category: '酥脆點心 & 分享餐' },
+            { id: 'rice_d', name: '米疙瘩', price: 35, category: '酥脆點心 & 分享餐' },
+            { id: 'meat_b', name: '小肉豆', price: 30, category: '酥脆點心 & 分享餐' },
+            { id: 'hash', name: '微笑薯餅', price: 50, category: '酥脆點心 & 分享餐' },
+            { id: 'hotdog_s', name: '熱狗腸', price: 25, category: '酥脆點心 & 分享餐' },
+        ];
+
+        let order = {};
+
+        function init() {
+            const container = document.getElementById('menu-container');
+            let currentCategory = '';
+            let gridDiv;
+
+            menu.forEach(item => {
+                order[item.id] = 0; // 初始化數量
+
+                if (item.category !== currentCategory) {
+                    currentCategory = item.category;
+                    const catTitle = document.createElement('div');
+                    catTitle.className = 'category-title';
+                    catTitle.innerText = currentCategory;
+                    container.appendChild(catTitle);
+                    
+                    gridDiv = document.createElement('div');
+                    gridDiv.className = 'grid';
+                    container.appendChild(gridDiv);
+                }
+
+                const priceText = item.note ? item.note : `$${item.price}`;
+                
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${priceText}</div>
+                    <div class="controls">
+                        <button onclick="updateQty('${item.id}', -1)">-</button>
+                        <span class="qty" id="qty-${item.id}">0</span>
+                        <button onclick="updateQty('${item.id}', 1)">+</button>
+                    </div>
+                `;
+                gridDiv.appendChild(card);
+            });
+        }
+
+        function updateQty(id, change) {
+            if (order[id] + change >= 0) {
+                order[id] += change;
+                document.getElementById(`qty-${id}`).innerText = order[id];
+                calculateTotal();
+            }
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            menu.forEach(item => {
+                const qty = order[item.id];
+                if (qty > 0) {
+                    if (item.isCombo) {
+                        // 處理組合價邏輯：商數算組合價，餘數算單價
+                        const combos = Math.floor(qty / item.comboQty);
+                        const singles = qty % item.comboQty;
+                        total += (combos * item.comboPrice) + (singles * item.price);
+                    } else {
+                        // 一般計價邏輯
+                        total += qty * item.price;
+                    }
+                }
+            });
+            document.getElementById('total-price').innerText = total;
+        }
+
+        function resetAll() {
+            menu.forEach(item => {
+                order[item.id] = 0;
+                document.getElementById(`qty-${item.id}`).innerText = 0;
+            });
+            calculateTotal();
+        }
+
+        // 啟動程式
+        init();
+    </script>
+</body>
+</html>
