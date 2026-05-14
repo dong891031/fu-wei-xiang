@@ -3,37 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>馥味香 點餐計算機</title>
+    <meta name="description" content="馥味香點餐系統，快速點餐與LINE訂單產生">
+    <title>馥味香 點餐系統</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; padding-bottom: 100px; margin: 0; }
-        h2 { color: #d35400; text-align: center; }
-        .category-title { background-color: #f39c12; color: white; padding: 5px 10px; border-radius: 5px; margin-top: 20px; display: inline-block; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
-        .item-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
-        .item-name { font-weight: bold; margin-bottom: 5px; font-size: 16px; }
-        .item-price { color: #e74c3c; font-size: 14px; margin-bottom: 10px; }
-        .controls { display: flex; justify-content: center; align-items: center; gap: 10px; }
-        button { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 5px 15px; font-size: 18px; border-radius: 5px; cursor: pointer; }
-        button:active { background-color: #bdc3c7; }
-        .qty { font-size: 18px; font-weight: bold; width: 20px; display: inline-block; }
-        #checkout-bar { position: fixed; bottom: 0; left: 0; right: 0; background-color: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
-        #reset-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 15px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        :root { --primary: #d35400; --secondary: #f39c12; --bg: #fdfaf6; --dark: #2c3e50; }
+        /* 1. 修正 padding 重複問題 */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 10px; padding-bottom: 220px; }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 5px; }
+        .sub-title { text-align: center; font-size: 13px; color: #666; margin-bottom: 15px; }
+        
+        .category-title { background-color: var(--secondary); color: white; padding: 4px 12px; border-radius: 15px; margin-top: 15px; display: inline-block; font-size: 14px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 10px; }
+        
+        /* 7. UX 提升：點擊/懸浮商品加動畫 */
+        .item-card { background: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; border: 1px solid #eee; cursor: pointer; transition: all 0.2s; }
+        .item-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .item-card:active { transform: scale(0.95); }
+        
+        .item-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .item-price { color: var(--primary); font-size: 12px; font-weight: 500; }
+
+        #cart-section { margin-top: 25px; border-top: 2px dashed #ccc; padding-top: 15px; }
+        .cart-title { font-size: 18px; font-weight: bold; color: var(--dark); margin-bottom: 10px; }
+        .cart-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-weight: bold; font-size: 15px; }
+        .cart-item-opts { font-size: 12px; color: #666; margin-top: 3px; }
+        .cart-item-price { font-weight: bold; color: var(--primary); margin-right: 10px; }
+        .del-btn { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .del-btn:active { background: #e84118; }
+
+        #checkout-panel { position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 15px; border-radius: 15px 15px 0 0; z-index: 90; }
+        .summary-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .discount-text { color: #2ed573; font-size: 13px; font-weight: bold; }
+        .total-text { font-size: 22px; font-weight: 900; color: var(--primary); }
+        .btn-group { display: flex; gap: 10px; }
+        .main-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        #copy-btn { background-color: var(--primary); color: white; }
+        #reset-btn { background-color: #eee; color: #666; flex: 0.3; }
+        .main-btn:active { opacity: 0.8; }
+
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: flex-end; }
+        #modal-content { background: white; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; box-sizing: border-box; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: var(--primary); }
+        
+        .opt-group { margin-bottom: 15px; }
+        .opt-title { font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #555; }
+        .opt-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+        .opt-btn { padding: 8px 12px; border: 1px solid #ccc; background: white; border-radius: 20px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .opt-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); font-weight: bold; }
+        
+        .qty-control { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 20px 0; }
+        .qty-btn { width: 40px; height: 40px; font-size: 24px; border-radius: 50%; border: 1px solid #ccc; background: white; cursor: pointer; }
+        #modal-qty { font-size: 24px; font-weight: bold; width: 30px; text-align: center; }
+        
+        .modal-actions { display: flex; gap: 10px; }
+        .modal-actions button { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
+        #btn-cancel { background: #eee; color: #333; }
+        #btn-confirm { background: var(--primary); color: white; }
+
+        /* 升級：Toast 提示框 */
+        #toast { visibility: hidden; min-width: 200px; background-color: rgba(44, 62, 80, 0.9); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 999; left: 50%; bottom: 120px; transform: translateX(-50%); font-size: 14px; opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+        #toast.show { visibility: visible; opacity: 1; bottom: 140px; }
+
+        #copy-area { position: absolute; left: -9999px; }
     </style>
 </head>
 <body>
 
-    <h2>🍗 馥味香 結帳計算機</h2>
+    <h2>🍗 馥味香 點餐系統</h2>
+    <div class="sub-title">點擊品項即可選擇口味與客製化</div>
 
     <div id="menu-container"></div>
 
-    <div id="checkout-bar">
-        <button id="reset-btn" onclick="resetAll()">清除重算</button>
-        <div>總計: $<span id="total-price">0</span></div>
+    <div id="cart-section">
+        <div class="cart-title">📝 目前購物車清單</div>
+        <div id="cart-list">
+            <div style="color: #999; font-size: 14px;">尚無品項</div>
+        </div>
     </div>
+
+    <div id="checkout-panel">
+        <div class="summary-row">
+            <div id="discount-display" class="discount-text"></div>
+            <div class="total-text">總計: $<span id="total-price">0</span></div>
+        </div>
+        <div class="btn-group">
+            <button id="reset-btn" class="main-btn">清空</button>
+            <button id="copy-btn" class="main-btn">複製 LINE 訂單明細</button>
+        </div>
+    </div>
+
+    <!-- 客製化彈出視窗 -->
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <div class="modal-header" id="modal-item-name">品項名稱</div>
+            
+            <div class="opt-group">
+                <div class="opt-title">基本調味 (可複選)</div>
+                <div class="opt-buttons" id="flavor-opts">
+                    <button class="opt-btn" data-type="flavor" data-val="胡椒">胡椒</button>
+                    <button class="opt-btn" data-type="flavor" data-val="梅粉">梅粉</button>
+                    <button class="opt-btn" data-type="flavor" data-val="番茄醬">番茄醬</button>
+                </div>
+            </div>
+
+            <div class="opt-group">
+                <div class="opt-title">辣度 (單選)</div>
+                <div class="opt-buttons" id="spicy-opts">
+                    <button class="opt-btn" data-type="spicy" data-val="不辣">不辣</button>
+                    <button class="opt-btn" data-type="spicy" data-val="微辣">微辣</button>
+                    <button class="opt-btn" data-type="spicy" data-val="小辣">小辣</button>
+                    <button class="opt-btn" data-type="spicy" data-val="中辣">中辣</button>
+                    <button class="opt-btn" data-type="spicy" data-val="大辣">大辣</button>
+                </div>
+            </div>
+
+            <div class="opt-group" id="cut-group" style="display: none;">
+                <div class="opt-title">雞排專屬 (單選)</div>
+                <div class="opt-buttons" id="cut-opts">
+                    <button class="opt-btn" data-type="cut" data-val="不剪">不剪</button>
+                    <button class="opt-btn" data-type="cut" data-val="要剪">要剪</button>
+                </div>
+            </div>
+
+            <div class="qty-control">
+                <button class="qty-btn" id="btn-qty-minus">-</button>
+                <div id="modal-qty">1</div>
+                <button class="qty-btn" id="btn-qty-plus">+</button>
+            </div>
+
+            <div class="modal-actions">
+                <button id="btn-cancel">取消</button>
+                <button id="btn-confirm">確認加入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示框 -->
+    <div id="toast">✅ 已加入購物車</div>
+    <textarea id="copy-area"></textarea>
 
     <script>
         const menu = [
-            // 招牌必點 - 尺寸類
             { id: 'c_small', name: '香酥雞 (小)', price: 50, category: '招牌必點' },
             { id: 'c_mid', name: '香酥雞 (中)', price: 100, category: '招牌必點' },
             { id: 'c_large', name: '香酥雞 (大)', price: 150, category: '招牌必點' },
@@ -49,13 +162,9 @@
             { id: 's_small', name: '嫩肩骨 (小)', price: 50, category: '招牌必點' },
             { id: 's_mid', name: '嫩肩骨 (中)', price: 100, category: '招牌必點' },
             { id: 's_large', name: '嫩肩骨 (大)', price: 150, category: '招牌必點' },
-            
-            // 招牌必點 - 特殊計價類
-            { id: 'wing', name: '三節翅', price: 25, isCombo: true, comboQty: 5, comboPrice: 100, note: '$25/隻, 100/5隻', category: '招牌必點' },
-            { id: 'drum', name: '小棒腿', price: 15, isCombo: true, comboQty: 7, comboPrice: 100, note: '$15/隻, 100/7隻', category: '招牌必點' },
+            { id: 'wing', name: '三節翅', price: 25, isCombo: true, comboQty: 5, comboPrice: 100, category: '招牌必點' },
+            { id: 'drum', name: '小棒腿', price: 15, isCombo: true, comboQty: 7, comboPrice: 100, category: '招牌必點' },
             { id: 'fillet', name: '雞排', price: 65, category: '招牌必點' },
-
-            // 酥脆點心 & 分享餐
             { id: 'hotdog_b', name: '裹粉熱狗', price: 20, category: '酥脆點心 & 分享餐' },
             { id: 'sweet_s', name: '地瓜薯條 (小)', price: 50, category: '酥脆點心 & 分享餐' },
             { id: 'sweet_l', name: '地瓜薯條 (大)', price: 100, category: '酥脆點心 & 分享餐' },
@@ -66,85 +175,283 @@
             { id: 'rice_d', name: '米疙瘩', price: 35, category: '酥脆點心 & 分享餐' },
             { id: 'meat_b', name: '小肉豆', price: 30, category: '酥脆點心 & 分享餐' },
             { id: 'hash', name: '微笑薯餅', price: 50, category: '酥脆點心 & 分享餐' },
-            { id: 'hotdog_s', name: '熱狗腸', price: 25, category: '酥脆點心 & 分享餐' },
+            { id: 'hotdog_s', name: '熱狗腸', price: 25, category: '酥脆點心 & 分享餐' }
         ];
 
-        let order = {};
+        let cart = []; 
+        let currentItem = null;
+        let currentQty = 1;
+        let tempOptions = { flavors: [], spicy: '不辣', cut: '不剪' };
+        let currentDiscounts = []; 
 
-        function init() {
+        // DOM 快取 (3. modal 重置邏輯優化)
+        const optBtns = document.querySelectorAll('.opt-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const defaultFlavor = document.querySelector('[data-type="flavor"][data-val="胡椒"]');
+        const defaultSpicy = document.querySelector('[data-type="spicy"][data-val="不辣"]');
+        const defaultCut = document.querySelector('[data-type="cut"][data-val="不剪"]');
+        const cartListDiv = document.getElementById('cart-list');
+
+        // 綁定全域事件 (2. 避免 inline onclick)
+        document.getElementById('reset-btn').addEventListener('click', resetCart);
+        document.getElementById('copy-btn').addEventListener('click', generateAndCopy);
+        document.getElementById('btn-cancel').addEventListener('click', closeModal);
+        document.getElementById('btn-confirm').addEventListener('click', confirmAddToCart);
+        document.getElementById('btn-qty-minus').addEventListener('click', () => changeModalQty(-1));
+        document.getElementById('btn-qty-plus').addEventListener('click', () => changeModalQty(1));
+        
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        function initMenu() {
             const container = document.getElementById('menu-container');
             let currentCategory = '';
             let gridDiv;
 
             menu.forEach(item => {
-                order[item.id] = 0; // 初始化數量
-
                 if (item.category !== currentCategory) {
                     currentCategory = item.category;
                     const catTitle = document.createElement('div');
                     catTitle.className = 'category-title';
                     catTitle.innerText = currentCategory;
                     container.appendChild(catTitle);
-                    
                     gridDiv = document.createElement('div');
                     gridDiv.className = 'grid';
                     container.appendChild(gridDiv);
                 }
-
-                const priceText = item.note ? item.note : `$${item.price}`;
-                
                 const card = document.createElement('div');
                 card.className = 'item-card';
+                // 使用 JS 綁定點擊事件
+                card.addEventListener('click', () => openModal(item));
                 card.innerHTML = `
                     <div class="item-name">${item.name}</div>
-                    <div class="item-price">${priceText}</div>
-                    <div class="controls">
-                        <button onclick="updateQty('${item.id}', -1)">-</button>
-                        <span class="qty" id="qty-${item.id}">0</span>
-                        <button onclick="updateQty('${item.id}', 1)">+</button>
-                    </div>
+                    <div class="item-price">$${item.price}</div>
                 `;
                 gridDiv.appendChild(card);
             });
+            
+            setupModalButtons();
         }
 
-        function updateQty(id, change) {
-            if (order[id] + change >= 0) {
-                order[id] += change;
-                document.getElementById(`qty-${id}`).innerText = order[id];
-                calculateTotal();
+        function setupModalButtons() {
+            optBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    let type = this.getAttribute('data-type');
+                    let val = this.getAttribute('data-val');
+                    
+                    if (type === 'flavor') {
+                        let idx = tempOptions.flavors.indexOf(val);
+                        if (idx > -1) { tempOptions.flavors.splice(idx, 1); this.classList.remove('active'); }
+                        else { tempOptions.flavors.push(val); this.classList.add('active'); }
+                    } else if (type === 'spicy') {
+                        tempOptions.spicy = val;
+                        document.querySelectorAll('#spicy-opts .opt-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                    } else if (type === 'cut') {
+                        tempOptions.cut = val;
+                        document.querySelectorAll('#cut-opts .opt-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function openModal(item) {
+            // 7. UX 提升：modal 開啟禁止背景滾動
+            document.body.style.overflow = 'hidden';
+            
+            currentItem = item;
+            currentQty = 1;
+            tempOptions = { flavors: ['胡椒'], spicy: '不辣', cut: '不剪' };
+            
+            document.getElementById('modal-item-name').innerText = item.name;
+            document.getElementById('modal-qty').innerText = currentQty;
+            
+            // 快取重置邏輯
+            optBtns.forEach(b => b.classList.remove('active'));
+            if(defaultFlavor) defaultFlavor.classList.add('active');
+            if(defaultSpicy) defaultSpicy.classList.add('active');
+            if(defaultCut) defaultCut.classList.add('active');
+
+            document.getElementById('cut-group').style.display = (item.id === 'fillet') ? 'block' : 'none';
+            modalOverlay.style.display = 'flex';
+        }
+
+        function closeModal() {
+            // 7. UX 提升：恢復背景滾動
+            document.body.style.overflow = '';
+            modalOverlay.style.display = 'none';
+        }
+
+        function changeModalQty(change) {
+            if(currentQty + change >= 1) {
+                currentQty += change;
+                document.getElementById('modal-qty').innerText = currentQty;
             }
         }
 
-        function calculateTotal() {
-            let total = 0;
-            menu.forEach(item => {
-                const qty = order[item.id];
-                if (qty > 0) {
-                    if (item.isCombo) {
-                        // 處理組合價邏輯：商數算組合價，餘數算單價
-                        const combos = Math.floor(qty / item.comboQty);
-                        const singles = qty % item.comboQty;
-                        total += (combos * item.comboPrice) + (singles * item.price);
-                    } else {
-                        // 一般計價邏輯
-                        total += qty * item.price;
-                    }
-                }
-            });
-            document.getElementById('total-price').innerText = total;
+        // 升級：顯示 Toast 提示框
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2000);
         }
 
-        function resetAll() {
-            menu.forEach(item => {
-                order[item.id] = 0;
-                document.getElementById(`qty-${item.id}`).innerText = 0;
+        function confirmAddToCart() {
+            let optsArray = [...tempOptions.flavors];
+            if(tempOptions.spicy !== '不辣') optsArray.push(tempOptions.spicy);
+            if(currentItem.id === 'fillet' && tempOptions.cut === '要剪') optsArray.push('要剪');
+            
+            let optString = optsArray.length > 0 ? optsArray.join(', ') : '原味';
+            let existing = cart.find(c => c.id === currentItem.id && c.optString === optString);
+            
+            if(existing) {
+                // 5. 防止數量爆增 bug
+                existing.qty = Math.min(existing.qty + currentQty, 999);
+            } else {
+                cart.push({
+                    id: currentItem.id,
+                    name: currentItem.name,
+                    price: currentItem.price,
+                    qty: Math.min(currentQty, 999),
+                    optString: optString,
+                    isCombo: currentItem.isCombo,
+                    comboQty: currentItem.comboQty,
+                    comboPrice: currentItem.comboPrice
+                });
+            }
+            
+            closeModal();
+            updateCartUI();
+            showToast(`✅ 已加入 ${currentItem.name}`);
+        }
+
+        function removeCartItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // 4. Cart UI render 優化（字串渲染與事件代理）
+        function updateCartUI() {
+            if (cart.length === 0) {
+                cartListDiv.innerHTML = '<div style="color: #999; font-size: 14px;">尚無品項</div>';
+                calculateTotal();
+                return;
+            }
+
+            let html = '';
+            cart.forEach((c, index) => {
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${c.name} x ${c.qty}</div>
+                            <div class="cart-item-opts">[ ${c.optString} ]</div>
+                        </div>
+                        <div class="cart-item-price">$${c.price * c.qty}</div>
+                        <button class="del-btn" data-index="${index}">刪除</button>
+                    </div>
+                `;
             });
+            
+            cartListDiv.innerHTML = html;
             calculateTotal();
         }
 
-        // 啟動程式
-        init();
+        // 事件代理處理刪除按鈕
+        cartListDiv.addEventListener('click', (e) => {
+            if (e.target.classList.contains('del-btn')) {
+                const index = e.target.getAttribute('data-index');
+                removeCartItem(index);
+            }
+        });
+
+        function calculateTotal() {
+            let total = 0;
+            currentDiscounts = [];
+            let idCounts = {};
+            
+            cart.forEach(c => {
+                if(!idCounts[c.id]) idCounts[c.id] = 0;
+                idCounts[c.id] += c.qty;
+                total += (c.price * c.qty);
+            });
+
+            for(let id in idCounts) {
+                let menuItem = menu.find(m => m.id === id);
+                if(menuItem.isCombo) {
+                    let totalQty = idCounts[id];
+                    let combos = Math.floor(totalQty / menuItem.comboQty);
+                    if(combos > 0) {
+                        let originalPrice = combos * menuItem.comboQty * menuItem.price;
+                        let comboPrice = combos * menuItem.comboPrice;
+                        let discountAmount = originalPrice - comboPrice;
+                        total -= discountAmount; 
+                        
+                        currentDiscounts.push({
+                            name: menuItem.name,
+                            amount: discountAmount
+                        });
+                    }
+                }
+            }
+
+            document.getElementById('total-price').innerText = total;
+            let discountHTML = currentDiscounts.map(d => `${d.name}組合已折$${d.amount}`).join(' | ');
+            document.getElementById('discount-display').innerText = discountHTML;
+        }
+
+        function resetCart() {
+            if(cart.length > 0 && confirm("確定要清空購物車嗎？")) {
+                cart = [];
+                updateCartUI();
+            }
+        }
+
+        // 6. Clipboard API 強化
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast("📋 訂單已複製！請貼到 LINE");
+            } catch (err) {
+                // 備用模式
+                const area = document.getElementById('copy-area');
+                area.value = text;
+                area.select();
+                area.setSelectionRange(0, 99999);
+                document.execCommand('copy');
+                showToast("📋 訂單已複製！（備用模式）");
+            }
+        }
+
+        function generateAndCopy() {
+            if (cart.length === 0) {
+                showToast("⚠️ 請先選擇品項！");
+                return;
+            }
+
+            let text = "📋 【馥味香 點餐明細】\n";
+            text += "------------------------\n";
+            
+            cart.forEach(c => {
+                text += `● ${c.name} x ${c.qty}\n`;
+                text += `  └ [${c.optString}]\n`;
+            });
+
+            text += "------------------------\n";
+            
+            currentDiscounts.forEach(d => {
+                text += `✨ 符合優惠：${d.name}折扣 -$${d.amount}\n`;
+            });
+
+            text += `💰 應收總額：$${document.getElementById('total-price').innerText} 元\n`;
+            text += `⏰ 點單時間：${new Date().toLocaleTimeString()}\n`;
+
+            copyText(text);
+        }
+
+        initMenu();
     </script>
 </body>
 </html>
