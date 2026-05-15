@@ -851,7 +851,7 @@ async function copyOrder() {
     a.value = text; a.select(); document.execCommand('copy');
   }
 
-  showToast(T.toastLine);
+  showToast(t().toastLine);
   const lineId = '@187ppubm';
   const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(text)}`;
   setTimeout(() => { window.location.href = lineUrl; }, 800);
