@@ -822,22 +822,26 @@ function showToast(msg) {
 async function copyOrder() {
   if (!cart.length) { showToast(t().toastEmpty); return; }
 
-  const T = t();
+  // ── 訂單內文固定使用中文 ──
+  const ZH = I18N.zh;
   const sep = '─'.repeat(20);
-  const lines = [T.orderHeader, sep];
+  const lines = [ZH.orderHeader, sep];
 
   cart.forEach(c => {
-    const dispName = lang === 'en'
-      ? itemDisplayName({ name: c.name, nameEn: c.nameEn }, c.size)
-      : itemDisplayName({ name: c.name }, c.size);
-    const optLabel = translateOptStr(c.optRaw);
+    // 品名：中文名 + 中文規格
+    const sizePart = c.size ? ` (${ZH.sizes[c.size] || c.size})` : '';
+    const dispName = `${c.name}${sizePart}`;
+    // 調味：用中文 key 對應中文標籤
+    const optLabel = (c.optRaw && c.optRaw.length)
+      ? c.optRaw.map(v => ZH.flavors[v] || ZH.spicy[v] || ZH.cut[v] || v).join(', ')
+      : ZH.plain;
     lines.push(`● ${dispName} × ${c.qty}`);
     lines.push(`  └ [${optLabel}]`);
   });
   lines.push(sep);
-  currentDiscounts.forEach(d => lines.push(T.orderDisc(lang==='en'?(d.nameEn||d.nameZh):d.nameZh, d.amount)));
-  lines.push(T.orderTotal(document.getElementById('total-price').textContent));
-  lines.push(T.orderTime(new Date().toLocaleTimeString(lang==='en'?'en-US':'zh-TW')));
+  currentDiscounts.forEach(d => lines.push(ZH.orderDisc(d.nameZh || d.name, d.amount)));
+  lines.push(ZH.orderTotal(document.getElementById('total-price').textContent));
+  lines.push(ZH.orderTime(new Date().toLocaleTimeString('zh-TW')));
 
   const text = lines.join('\n');
 
