@@ -7,59 +7,83 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* 基礎樣式 */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
-/* 新增：為大螢幕限制最大寬度並置中 */
 body{
   font-family:'Noto Sans TC',sans-serif;
   background:#f5f3f0;
   color:#1a1a1a;
   padding-bottom:155px;
-  max-width: 800px; /* 電腦版最大寬度 */
-  margin: 0 auto;   /* 畫面置中 */
-  box-shadow: 0 0 20px rgba(0,0,0,0.03); /* 電腦版兩側微微陰影 */
-  min-height: 100vh;
-  position: relative;
-  background-color: #fff; 
+  max-width:800px;
+  margin:0 auto;
+  box-shadow:0 0 20px rgba(0,0,0,0.03);
+  min-height:100vh;
+  position:relative;
+  background-color:#fff;
 }
-/* 讓外圍背景保持灰色，內容區塊白色 */
-html { background: #f5f3f0; } 
+html{background:#f5f3f0;}
 
-.header{background:#fff;padding:24px 16px 20px;text-align:center;border-bottom:1px solid #e5e0da}
+/* ── Header ── */
+.header{background:#fff;padding:24px 16px 20px;text-align:center;border-bottom:1px solid #e5e0da;position:relative}
 .header-name{font-size:24px;font-weight:900;letter-spacing:1px;color:#1a1a1a}
 .header-sub{font-size:14px;color:#999;margin-top:6px}
 
+/* ── Language Toggle ── */
+.lang-toggle{
+  position:absolute;
+  top:50%;
+  right:16px;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  background:#f5f3f0;
+  border:1.5px solid #e0dbd5;
+  border-radius:99px;
+  padding:3px;
+  gap:2px;
+  cursor:pointer;
+}
+.lang-btn{
+  padding:5px 11px;
+  font-size:12px;
+  font-weight:700;
+  border-radius:99px;
+  border:none;
+  background:transparent;
+  color:#aaa;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all .18s;
+  white-space:nowrap;
+}
+.lang-btn.active{
+  background:#fff;
+  color:#c94c18;
+  box-shadow:0 1px 4px rgba(0,0,0,0.10);
+}
+
+/* ── Category Nav ── */
 .cat-nav{background:#fff;border-bottom:1px solid #e5e0da;position:sticky;top:0;z-index:40}
 .cat-nav-inner{display:flex;overflow-x:auto;scrollbar-width:none;padding:0 12px}
 .cat-nav-inner::-webkit-scrollbar{display:none}
 .cat-tab{flex-shrink:0;padding:14px 16px;font-size:15px;font-weight:500;color:#999;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;transition:color .15s,border-color .15s}
 .cat-tab.active{color:#c94c18;border-bottom-color:#c94c18;font-weight:700}
 
+/* ── Menu Grid ── */
 .menu-body{padding:0 12px}
 .section-title{font-size:13px;font-weight:700;color:#999;letter-spacing:1.5px;padding:20px 4px 12px;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:8px;}
 
-/* 新增：自適應 Grid 排版，最小 160px 一格，空間夠會自動增加欄數 */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
-  gap:12px;
-  margin-bottom:8px;
-}
-
-.item-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e3dd;cursor:pointer;transition:box-shadow .15s, transform .15s;user-select:none;display:flex;flex-direction:column}
-.item-card:active{opacity:.82; transform:scale(0.98)}
+.item-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e8e3dd;cursor:pointer;transition:box-shadow .15s,transform .15s;user-select:none;display:flex;flex-direction:column}
+.item-card:active{opacity:.82;transform:scale(0.98)}
 .item-card:hover{box-shadow:0 6px 16px rgba(0,0,0,.08)}
-
 .item-photo-wrap{position:relative;width:100%;padding-top:72%;background:#f0ece6;overflow:hidden}
 .item-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .3s}
-.item-card:hover .item-photo{transform:scale(1.05)} /* 電腦版滑鼠游標懸浮動畫 */
-
+.item-card:hover .item-photo{transform:scale(1.05)}
 .item-badges{position:absolute;top:8px;left:8px;display:flex;gap:4px;z-index:5}
 .item-hot-badge{background:#e8292f;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-new-badge{background:#f5a623;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.6}
 .item-combo-badge{background:rgba(0,0,0,.52);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;line-height:1.6}
-
 .item-body{padding:14px 12px 16px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .item-name{font-size:15px;font-weight:700;line-height:1.35;color:#1a1a1a;margin-bottom:8px}
 .item-price-row{display:flex;align-items:center;justify-content:center;gap:12px;width:100%}
@@ -68,6 +92,7 @@ html { background: #f5f3f0; }
 .item-add{width:32px;height:32px;background:#c94c18;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
 .item-add:hover{background:#a83c12}
 
+/* ── Cart ── */
 .cart-wrap{padding:16px 12px 0}
 .cart-box{background:#fff;border-radius:12px;border:1px solid #e8e3dd;overflow:hidden}
 .cart-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #ede8e2}
@@ -84,13 +109,13 @@ html { background: #f5f3f0; }
 .ci-name{font-size:14px;font-weight:700}
 .ci-opts{font-size:12px;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ci-ctrl{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.cq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#666;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s, color .15s}
+.cq-btn{width:28px;height:28px;border-radius:50%;border:1.5px solid #ddd;background:#fff;color:#666;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s}
 .cq-btn:hover{border-color:#999}
 .cq-btn.minus{border-color:#f5c4b4;color:#c94c18}
 .cq-qty{font-size:14px;font-weight:700;min-width:20px;text-align:center}
 .ci-price{font-size:14px;font-weight:700;color:#1a1a1a;width:50px;text-align:right;flex-shrink:0}
 
-/* 新增：底部結帳列加入置中與最大寬度 */
+/* ── Checkout Bar ── */
 #checkout-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:800px;background:#fff;border-top:1px solid #e5e0da;padding:10px 16px max(12px,env(safe-area-inset-bottom));z-index:80;box-shadow:0 -2px 10px rgba(0,0,0,.03)}
 .disc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .disc-tag{font-size:11px;background:#edf9f2;color:#27ae60;border:1px solid #b9e8cf;border-radius:4px;padding:2px 8px;font-weight:700}
@@ -102,23 +127,16 @@ html { background: #f5f3f0; }
 .bar-copy:hover{background:#b84112}
 .bar-copy:active{background:#a83c12}
 
-/* 彈出視窗自適應優化 */
+/* ── Modal ── */
 #modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
 #modal-box{background:#fff;width:100%;max-width:500px;border-radius:20px 20px 0 0;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:slideUp .24s cubic-bezier(.2,.9,.4,1);max-height:88vh;overflow-y:auto}
-
-/* 平板與電腦版的 Modal 樣式 */
-@media (min-width: 600px) {
-  #modal-overlay { align-items: center; } /* 垂直置中 */
-  #modal-box { 
-    border-radius: 20px; /* 四邊圓角 */
-    animation: popIn .2s ease-out; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  }
-  .modal-drag { display: none; } /* 隱藏手機版的拖曳橫條 */
+@media(min-width:600px){
+  #modal-overlay{align-items:center;}
+  #modal-box{border-radius:20px;animation:popIn .2s ease-out;box-shadow:0 10px 40px rgba(0,0,0,0.2);}
+  .modal-drag{display:none;}
 }
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes popIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
-
 .modal-drag{width:36px;height:4px;background:#ddd;border-radius:99px;margin:12px auto 0}
 .modal-item-row{display:flex;align-items:center;gap:14px;padding:16px 20px 14px;border-bottom:1px solid #f0ece6;text-align:left}
 .modal-thumb{width:62px;height:62px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#f0ece6}
@@ -143,15 +161,24 @@ html { background: #f5f3f0; }
 .m-cancel:hover{background:#f5f5f5}
 .m-confirm{flex:1;padding:13px;background:#c94c18;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:background .15s}
 .m-confirm:hover{background:#b84112}
+
+/* ── Toast ── */
 #toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(20,20,20,.85);color:#fff;font-size:13px;padding:10px 20px;border-radius:8px;white-space:nowrap;opacity:0;visibility:hidden;transition:opacity .2s,transform .2s;z-index:200}
 #toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
+<!-- ══ Header ══ -->
 <div class="header">
   <div class="header-name">🍗 馥味香</div>
-  <div class="header-sub">點選品項選口味，快速複製 LINE 訂單</div>
+  <div class="header-sub" id="header-sub">點選品項選口味，快速複製 LINE 訂單</div>
+
+  <!-- Language Toggle -->
+  <div class="lang-toggle" id="lang-toggle" role="group" aria-label="Language">
+    <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
 </div>
 
 <div class="cat-nav">
@@ -164,13 +191,13 @@ html { background: #f5f3f0; }
   <div class="cart-box">
     <div class="cart-head">
       <div class="cart-head-left">
-        購物車
+        <span id="cart-title">購物車</span>
         <span class="cart-badge" id="cart-badge">0</span>
       </div>
       <button class="cart-clear" id="clear-btn">清空</button>
     </div>
     <div id="cart-list">
-      <div class="cart-empty">尚未選擇品項<br>點擊上方菜單開始點餐</div>
+      <div class="cart-empty" id="cart-empty-msg">尚未選擇品項<br>點擊上方菜單開始點餐</div>
     </div>
   </div>
 </div>
@@ -179,13 +206,14 @@ html { background: #f5f3f0; }
   <div class="disc-row" id="disc-row"></div>
   <div class="bar-row">
     <div class="bar-total">
-      <div class="bar-label">合計金額</div>
+      <div class="bar-label" id="bar-label">合計金額</div>
       <div class="bar-amount">$<span id="total-price">0</span></div>
     </div>
     <button class="bar-copy" id="copy-btn">送出訂單至 LINE</button>
   </div>
 </div>
 
+<!-- ══ Modal ══ -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="modal-drag"></div>
@@ -198,38 +226,33 @@ html { background: #f5f3f0; }
     </div>
     <div class="modal-body">
       <div class="opt-group" id="size-group" style="display:none">
-        <div class="opt-label">規格（單選）</div>
+        <div class="opt-label" id="lbl-size">規格（單選）</div>
         <div class="opt-chips" id="size-opts"></div>
       </div>
-      
+
       <div class="opt-group">
-        <div class="opt-label">基本調味（可複選）</div>
+        <div class="opt-label" id="lbl-flavor">基本調味（可複選）</div>
         <div class="opt-chips" id="flavor-opts">
-          <button class="opt-chip" data-type="flavor" data-val="胡椒">胡椒</button>
-          <button class="opt-chip" data-type="flavor" data-val="梅粉">梅粉</button>
-          <button class="opt-chip" data-type="flavor" data-val="番茄醬">番茄醬</button>
+          <!-- rendered by JS -->
         </div>
       </div>
+
       <div class="opt-group">
-        <div class="opt-label">辣度（單選）</div>
+        <div class="opt-label" id="lbl-spicy">辣度（單選）</div>
         <div class="opt-chips" id="spicy-opts">
-          <button class="opt-chip" data-type="spicy" data-val="不辣">不辣</button>
-          <button class="opt-chip" data-type="spicy" data-val="微辣">微辣</button>
-          <button class="opt-chip" data-type="spicy" data-val="小辣">小辣</button>
-          <button class="opt-chip" data-type="spicy" data-val="中辣">中辣</button>
-          <button class="opt-chip" data-type="spicy" data-val="大辣">大辣</button>
+          <!-- rendered by JS -->
         </div>
       </div>
+
       <div class="opt-group" id="cut-group" style="display:none">
-        <div class="opt-label">雞排切法（單選）</div>
+        <div class="opt-label" id="lbl-cut">雞排切法（單選）</div>
         <div class="opt-chips" id="cut-opts">
-          <button class="opt-chip" data-type="cut" data-val="不剪">整塊不剪</button>
-          <button class="opt-chip" data-type="cut" data-val="要剪">幫我剪</button>
+          <!-- rendered by JS -->
         </div>
       </div>
     </div>
     <div class="qty-row">
-      <div class="qty-label">數量</div>
+      <div class="qty-label" id="lbl-qty">數量</div>
       <div class="qty-ctrl">
         <button class="qty-btn" id="qty-minus">−</button>
         <div id="modal-qty">1</div>
@@ -247,80 +270,216 @@ html { background: #f5f3f0; }
 <textarea id="copy-area" style="position:absolute;left:-9999px"></textarea>
 
 <script>
-const PHOTOS = {
-  xiangsuji: './images/香酥雞.png',
-  paigu: './images/排骨酥.png',
-  sanjiao: './images/三角骨.png',
-  ruangu: './images/軟骨酥.png',
-  jianjian: './images/嫩肩骨.png',
-  wing: './images/三節翅.png',
-  drum: './images/小棒腿.png',
-  fillet: './images/雞排.png',
-  hotdog_b: './images/裹粉熱狗.png',
-  sweetfry: './images/地瓜薯條.png',
-  onion: './images/圈圈.png',
-  fries: './images/薯條.png',
-  rice_d: './images/米疙瘩.png',
-  meat_b: './images/小肉豆.png',
-  hash: './images/微笑薯餅.png',
-  hotdog_s: './images/熱狗腸.png'
+/* ══════════════════════════════════════
+   i18n — Translation Strings
+══════════════════════════════════════ */
+const I18N = {
+  zh: {
+    headerSub:      '點選品項選口味，快速複製 LINE 訂單',
+    cartTitle:      '購物車',
+    clearBtn:       '清空',
+    cartEmpty:      '尚未選擇品項\n點擊上方菜單開始點餐',
+    barLabel:       '合計金額',
+    sendLine:       '送出訂單至 LINE',
+    lblSize:        '規格（單選）',
+    lblFlavor:      '基本調味（可複選）',
+    lblSpicy:       '辣度（單選）',
+    lblCut:         '雞排切法（單選）',
+    lblQty:         '數量',
+    cancel:         '取消',
+    addCart:        '加入購物車',
+    unitPrice:      '單價',
+    confirmClear:   '確定要清空購物車嗎？',
+    toastEmpty:     '請先選擇品項',
+    toastAdded:     (name) => `✓ 已加入 ${name}`,
+    toastLine:      '訂單已產生！正在為您開啟 LINE...',
+    discLabel:      (name, amt) => `✓ ${name} 折 -$${amt}`,
+    orderHeader:    '📋 【馥味香 點餐明細】',
+    orderDisc:      (name, amt) => `✓ ${name} 折扣 -$${amt}`,
+    orderTotal:     (n) => `💰 合計：$${n} 元`,
+    orderTime:      (t) => `⏰ ${t}`,
+    hot:            '熱銷',
+    newTag:         'NEW',
+    cats: {
+      '招牌必點':            '招牌必點',
+      '酥脆點心 & 分享餐':   '酥脆點心 & 分享餐',
+    },
+    // options — value → display label
+    flavors: { '胡椒':'胡椒', '梅粉':'梅粉', '番茄醬':'番茄醬' },
+    spicy:   { '不辣':'不辣', '微辣':'微辣', '小辣':'小辣', '中辣':'中辣', '大辣':'大辣' },
+    cut:     { '不剪':'整塊不剪', '要剪':'幫我剪' },
+    sizes:   { '小':'小', '中':'中', '大':'大' },
+    plain:   '原味',
+  },
+  en: {
+    headerSub:      'Tap items to customize, then send your order via LINE',
+    cartTitle:      'Cart',
+    clearBtn:       'Clear',
+    cartEmpty:      'No items yet\nTap the menu above to start ordering',
+    barLabel:       'Total',
+    sendLine:       'Send Order via LINE',
+    lblSize:        'Size (choose one)',
+    lblFlavor:      'Seasoning (multiple)',
+    lblSpicy:       'Spice Level (choose one)',
+    lblCut:         'Chicken Chop Cut (choose one)',
+    lblQty:         'Quantity',
+    cancel:         'Cancel',
+    addCart:        'Add to Cart',
+    unitPrice:      'Unit Price',
+    confirmClear:   'Clear the entire cart?',
+    toastEmpty:     'Please select an item first',
+    toastAdded:     (name) => `✓ Added: ${name}`,
+    toastLine:      'Order ready! Opening LINE...',
+    discLabel:      (name, amt) => `✓ ${name} deal -$${amt}`,
+    orderHeader:    '📋 【Fu Wei Xiang — Order Summary】',
+    orderDisc:      (name, amt) => `✓ ${name} discount -$${amt}`,
+    orderTotal:     (n) => `💰 Total: $${n}`,
+    orderTime:      (t) => `⏰ ${t}`,
+    hot:            'HOT',
+    newTag:         'NEW',
+    cats: {
+      '招牌必點':            'Signature Must-Try',
+      '酥脆點心 & 分享餐':   'Crispy Snacks & Sharing',
+    },
+    flavors: { '胡椒':'Pepper', '梅粉':'Plum Powder', '番茄醬':'Ketchup' },
+    spicy:   { '不辣':'Not Spicy', '微辣':'Very Mild', '小辣':'Mild', '中辣':'Medium', '大辣':'Hot' },
+    cut:     { '不剪':'Whole (no cut)', '要剪':'Cut for me' },
+    sizes:   { '小':'S', '中':'M', '大':'L' },
+    plain:   'Original',
+  },
 };
 
+/* ══════════════════════════════════════
+   Menu Data
+══════════════════════════════════════ */
+const PHOTOS = {
+  xiangsuji: './images/香酥雞.png',
+  paigu:     './images/排骨酥.png',
+  sanjiao:   './images/三角骨.png',
+  ruangu:    './images/軟骨酥.png',
+  jianjian:  './images/嫩肩骨.png',
+  wing:      './images/三節翅.png',
+  drum:      './images/小棒腿.png',
+  fillet:    './images/雞排.png',
+  hotdog_b:  './images/裹粉熱狗.png',
+  sweetfry:  './images/地瓜薯條.png',
+  onion:     './images/圈圈.png',
+  fries:     './images/薯條.png',
+  rice_d:    './images/米疙瘩.png',
+  meat_b:    './images/小肉豆.png',
+  hash:      './images/微笑薯餅.png',
+  hotdog_s:  './images/熱狗腸.png',
+};
+
+// name / nameEn — used for display; category key always zh for internal use
 const menu = [
-  {
-    id: 'xiangsuji', name: '香酥雞', category: '招牌必點', hot: true,
-    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
-  },
-  {
-    id: 'paigu', name: '排骨酥', category: '招牌必點', hot: true,
-    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
-  },
-  {
-    id: 'sanjiao', name: '三角骨', category: '招牌必點', hot: true,
-    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
-  },
-  {
-    id: 'ruangu', name: '軟骨酥', category: '招牌必點',
-    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
-  },
-  {
-    id: 'jianjian', name: '嫩肩骨', category: '招牌必點', new: true,
-    options: [{label:'小', price:50}, {label:'中', price:100}, {label:'大', price:150}]
-  },
-  {id:'wing', name:'三節翅', price:25, isCombo:true, comboQty:5, comboPrice:100, category:'招牌必點'},
-  {id:'drum', name:'小棒腿', price:15, isCombo:true, comboQty:7, comboPrice:100, category:'招牌必點'},
-  {id:'fillet', name:'雞排', price:65, category:'招牌必點'},
-  {id:'hotdog_b', name:'裹粉熱狗', price:20, category:'酥脆點心 & 分享餐'},
-  {
-    id: 'sweetfry', name: '地瓜薯條', category: '酥脆點心 & 分享餐',
-    options: [{label:'小', price:50}, {label:'大', price:100}]
-  },
-  {
-    id: 'onion', name: '圈圈', category: '酥脆點心 & 分享餐',
-    options: [{label:'小', price:50}, {label:'大', price:100}]
-  },
-  {
-    id: 'fries', name: '薯條', category: '酥脆點心 & 分享餐',
-    options: [{label:'小', price:50}, {label:'大', price:100}]
-  },
-  {id:'rice_d', name:'米疙瘩', price:35, category:'酥脆點心 & 分享餐'},
-  {id:'meat_b', name:'小肉豆', price:30, category:'酥脆點心 & 分享餐'},
-  {id:'hash', name:'微笑薯餅', price:50, category:'酥脆點心 & 分享餐'},
-  {id:'hotdog_s', name:'熱狗腸', price:25, category:'酥脆點心 & 分享餐'}
+  { id:'xiangsuji', name:'香酥雞', nameEn:'Crispy Chicken', category:'招牌必點', hot:true,
+    options:[{label:'小',price:50},{label:'中',price:100},{label:'大',price:150}] },
+  { id:'paigu', name:'排骨酥', nameEn:'Crispy Pork Ribs', category:'招牌必點', hot:true,
+    options:[{label:'小',price:50},{label:'中',price:100},{label:'大',price:150}] },
+  { id:'sanjiao', name:'三角骨', nameEn:'Pork Triangle Bone', category:'招牌必點', hot:true,
+    options:[{label:'小',price:50},{label:'中',price:100},{label:'大',price:150}] },
+  { id:'ruangu', name:'軟骨酥', nameEn:'Crispy Cartilage', category:'招牌必點',
+    options:[{label:'小',price:50},{label:'中',price:100},{label:'大',price:150}] },
+  { id:'jianjian', name:'嫩肩骨', nameEn:'Tender Shoulder Bone', category:'招牌必點', new:true,
+    options:[{label:'小',price:50},{label:'中',price:100},{label:'大',price:150}] },
+  { id:'wing',    name:'三節翅', nameEn:'3-Joint Wings',      price:25, isCombo:true, comboQty:5, comboPrice:100, category:'招牌必點' },
+  { id:'drum',    name:'小棒腿', nameEn:'Drumettes',           price:15, isCombo:true, comboQty:7, comboPrice:100, category:'招牌必點' },
+  { id:'fillet',  name:'雞排',   nameEn:'Chicken Chop',        price:65, category:'招牌必點' },
+  { id:'hotdog_b',name:'裹粉熱狗',nameEn:'Battered Hot Dog',   price:20, category:'酥脆點心 & 分享餐' },
+  { id:'sweetfry',name:'地瓜薯條',nameEn:'Sweet Potato Fries', category:'酥脆點心 & 分享餐',
+    options:[{label:'小',price:50},{label:'大',price:100}] },
+  { id:'onion',   name:'圈圈',   nameEn:'Onion Rings',         category:'酥脆點心 & 分享餐',
+    options:[{label:'小',price:50},{label:'大',price:100}] },
+  { id:'fries',   name:'薯條',   nameEn:'French Fries',        category:'酥脆點心 & 分享餐',
+    options:[{label:'小',price:50},{label:'大',price:100}] },
+  { id:'rice_d',  name:'米疙瘩', nameEn:'Rice Dumplings',      price:35, category:'酥脆點心 & 分享餐' },
+  { id:'meat_b',  name:'小肉豆', nameEn:'Meat Bites',          price:30, category:'酥脆點心 & 分享餐' },
+  { id:'hash',    name:'微笑薯餅',nameEn:'Smiley Hash Browns',  price:50, category:'酥脆點心 & 分享餐' },
+  { id:'hotdog_s',name:'熱狗腸', nameEn:'Hot Dog Sausage',     price:25, category:'酥脆點心 & 分享餐' },
 ];
 
 const CATS = ['招牌必點','酥脆點心 & 分享餐'];
 let cart=[], currentItem=null, currentQty=1, tempOpts={}, currentDiscounts=[];
+let lang = 'zh';   // active language
 const overlay = document.getElementById('modal-overlay');
 
+/* ══════════════════════════════════════
+   Language helpers
+══════════════════════════════════════ */
+function t(){ return I18N[lang]; }
+
+function itemDisplayName(item, sizeKey) {
+  const n = lang === 'en' ? (item.nameEn || item.name) : item.name;
+  if (!sizeKey) return n;
+  const sLabel = t().sizes[sizeKey] || sizeKey;
+  return `${n} (${sLabel})`;
+}
+
+// Translate an already-stored optString back to the current language
+// We store raw zh values internally and re-render labels from them
+function translateOptStr(optArr) {
+  if (!optArr || !optArr.length) return t().plain;
+  const fl = t().flavors;
+  const sp = t().spicy;
+  const cu = t().cut;
+  return optArr.map(v => fl[v] || sp[v] || cu[v] || v).join(', ');
+}
+
+/* ══════════════════════════════════════
+   setLang — switch language & re-render
+══════════════════════════════════════ */
+function setLang(newLang) {
+  if (lang === newLang) return;
+  lang = newLang;
+  document.documentElement.lang = newLang === 'zh' ? 'zh-TW' : 'en';
+
+  // Toggle button styles
+  document.getElementById('btn-zh').classList.toggle('active', newLang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', newLang === 'en');
+
+  const T = t();
+
+  // Static UI strings
+  document.getElementById('header-sub').textContent  = T.headerSub;
+  document.getElementById('cart-title').textContent  = T.cartTitle;
+  document.getElementById('clear-btn').textContent   = T.clearBtn;
+  document.getElementById('bar-label').textContent   = T.barLabel;
+  document.getElementById('copy-btn').textContent    = T.sendLine;
+  document.getElementById('btn-cancel').textContent  = T.cancel;
+  document.getElementById('btn-confirm').textContent = T.addCart;
+  document.getElementById('lbl-size').textContent    = T.lblSize;
+  document.getElementById('lbl-flavor').textContent  = T.lblFlavor;
+  document.getElementById('lbl-spicy').textContent   = T.lblSpicy;
+  document.getElementById('lbl-cut').textContent     = T.lblCut;
+  document.getElementById('lbl-qty').textContent     = T.lblQty;
+
+  // Rebuild tabs & menu grid
+  document.getElementById('cat-tabs').innerHTML = '';
+  document.getElementById('menu-container').innerHTML = '';
+  initTabs();
+  initMenu();
+
+  // Rebuild modal option chips if modal is open
+  if (overlay.style.display === 'flex' && currentItem) {
+    buildModalChips(currentItem);
+  }
+
+  // Re-render cart (name + optString labels will update)
+  updateCart();
+}
+
+/* ══════════════════════════════════════
+   Tabs
+══════════════════════════════════════ */
 function initTabs() {
   const nav = document.getElementById('cat-tabs');
-  CATS.forEach((cat,i) => {
+  CATS.forEach((cat, i) => {
     const btn = document.createElement('button');
-    btn.className = 'cat-tab' + (i===0?' active':'');
-    btn.textContent = cat;
+    btn.className = 'cat-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = t().cats[cat] || cat;
     btn.onclick = () => {
-      document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('sec-'+cat)?.scrollIntoView({behavior:'smooth',block:'start'});
     };
@@ -328,281 +487,386 @@ function initTabs() {
   });
 }
 
+/* ══════════════════════════════════════
+   Menu Grid
+══════════════════════════════════════ */
 function initMenu() {
+  const T = t();
   const container = document.getElementById('menu-container');
   let curCat='', grid;
   menu.forEach(item => {
-    if(item.category!==curCat) {
+    if (item.category !== curCat) {
       curCat = item.category;
       const sec = document.createElement('div');
       sec.id = 'sec-'+curCat;
       const title = document.createElement('div');
-      title.className='section-title';
-      title.textContent = curCat;
+      title.className = 'section-title';
+      title.textContent = T.cats[curCat] || curCat;
       grid = document.createElement('div');
-      grid.className='grid';
+      grid.className = 'grid';
       sec.appendChild(title);
       sec.appendChild(grid);
       container.appendChild(sec);
     }
-    
+
     const photoSrc = PHOTOS[item.id] || '';
-    let badgeHtml = item.hot?'<span class="item-hot-badge">熱銷</span>':item.new?'<span class="item-new-badge">NEW</span>':'';
-    let comboBadge = item.isCombo?`<span class="item-combo-badge">${item.comboQty}入${item.comboPrice}</span>`:'';
-    let displayPrice = item.options ? item.options[0].price : item.price;
-    
+    const badgeHtml = item.hot
+      ? `<span class="item-hot-badge">${T.hot}</span>`
+      : item.new
+        ? `<span class="item-new-badge">${T.newTag}</span>`
+        : '';
+    const comboBadge = item.isCombo
+      ? `<span class="item-combo-badge">${item.comboQty}×$${item.comboPrice}</span>`
+      : '';
+    const displayPrice = item.options ? item.options[0].price : item.price;
+    const displayName  = lang === 'en' ? (item.nameEn || item.name) : item.name;
+
     const card = document.createElement('div');
-    card.className='item-card';
-    card.innerHTML=`
+    card.className = 'item-card';
+    card.innerHTML = `
       <div class="item-photo-wrap">
-        <img class="item-photo" src="${photoSrc}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
+        <img class="item-photo" src="${photoSrc}" alt="${displayName}" loading="lazy" onerror="this.style.display='none'">
         <div class="item-badges">${badgeHtml}${comboBadge}</div>
       </div>
       <div class="item-body">
-        <div class="item-name">${item.name}</div>
+        <div class="item-name">${displayName}</div>
         <div class="item-price-row">
           <div class="item-price">${displayPrice}${item.options?'↑':''}</div>
-          <button class="item-add" aria-label="新增">+</button>
+          <button class="item-add" aria-label="${lang==='en'?'Add':'新增'}">+</button>
         </div>
       </div>`;
-    card.querySelector('.item-add').addEventListener('click', e=>{e.stopPropagation();openModal(item);});
-    card.addEventListener('click', ()=>openModal(item));
+    card.querySelector('.item-add').addEventListener('click', e => { e.stopPropagation(); openModal(item); });
+    card.addEventListener('click', () => openModal(item));
     grid.appendChild(card);
   });
+}
+
+/* ══════════════════════════════════════
+   Modal — option chips
+══════════════════════════════════════ */
+function buildModalChips(item) {
+  const T = t();
+
+  // Flavor chips
+  const flavorContainer = document.getElementById('flavor-opts');
+  flavorContainer.innerHTML = '';
+  Object.entries(T.flavors).forEach(([val, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-chip' + (tempOpts.flavors.includes(val) ? ' active' : '');
+    btn.dataset.type = 'flavor';
+    btn.dataset.val  = val;
+    btn.textContent  = label;
+    flavorContainer.appendChild(btn);
+  });
+
+  // Spicy chips
+  const spicyContainer = document.getElementById('spicy-opts');
+  spicyContainer.innerHTML = '';
+  Object.entries(T.spicy).forEach(([val, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-chip' + (tempOpts.spicy === val ? ' active' : '');
+    btn.dataset.type = 'spicy';
+    btn.dataset.val  = val;
+    btn.textContent  = label;
+    spicyContainer.appendChild(btn);
+  });
+
+  // Cut chips (only for fillet)
+  const cutContainer = document.getElementById('cut-opts');
+  cutContainer.innerHTML = '';
+  document.getElementById('cut-group').style.display = item.id === 'fillet' ? 'block' : 'none';
+  Object.entries(T.cut).forEach(([val, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-chip' + (tempOpts.cut === val ? ' active' : '');
+    btn.dataset.type = 'cut';
+    btn.dataset.val  = val;
+    btn.textContent  = label;
+    cutContainer.appendChild(btn);
+  });
+
   setupOptButtons();
 }
 
-function setupOptButtons() {
-  document.querySelectorAll('.opt-chip').forEach(btn => {
-    if(btn.closest('#size-opts')) return; 
-    btn.addEventListener('click', function() {
-      const type=this.dataset.type, val=this.dataset.val;
-      if(type==='flavor') {
-        const idx=tempOpts.flavors.indexOf(val);
-        if(idx>-1){tempOpts.flavors.splice(idx,1);this.classList.remove('active');}
-        else{tempOpts.flavors.push(val);this.classList.add('active');}
-      } else if(type==='spicy') {
-        tempOpts.spicy=val;
-        document.querySelectorAll('#spicy-opts .opt-chip').forEach(b=>b.classList.remove('active'));
-        this.classList.add('active');
-      } else if(type==='cut') {
-        tempOpts.cut=val;
-        document.querySelectorAll('#cut-opts .opt-chip').forEach(b=>b.classList.remove('active'));
-        this.classList.add('active');
-      }
-    });
-  });
-}
-
-function openModal(item) {
-  document.body.style.overflow='hidden';
-  currentItem=item; currentQty=1;
-  
-  if(item.options) {
-    tempOpts.size = item.options[0].label;
-    tempOpts.currentPrice = item.options[0].price;
-  } else {
-    tempOpts.size = null;
-    tempOpts.currentPrice = item.price;
-  }
-
-  tempOpts.flavors=['胡椒']; tempOpts.spicy='不辣'; tempOpts.cut='不剪';
-  
-  const photoSrc = PHOTOS[item.id] || '';
-  const modalThumb = document.getElementById('modal-thumb');
-  modalThumb.src = photoSrc;
-  modalThumb.style.display = photoSrc ? 'block' : 'none';
-
-  document.getElementById('modal-name').textContent=item.name;
-  document.getElementById('modal-price').textContent=`單價 ${tempOpts.currentPrice}`;
-  document.getElementById('modal-qty').textContent=1;
-
+function buildSizeChips(item) {
+  const T = t();
   const sizeGroup = document.getElementById('size-group');
-  const sizeOpts = document.getElementById('size-opts');
+  const sizeOpts  = document.getElementById('size-opts');
   sizeOpts.innerHTML = '';
-  if(item.options) {
+  if (item.options) {
     sizeGroup.style.display = 'block';
     item.options.forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'opt-chip' + (opt.label === tempOpts.size ? ' active' : '');
-      btn.textContent = opt.label;
+      btn.textContent = T.sizes[opt.label] || opt.label;
       btn.onclick = () => {
         tempOpts.size = opt.label;
         tempOpts.currentPrice = opt.price;
         document.querySelectorAll('#size-opts .opt-chip').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('modal-price').textContent = `單價 ${opt.price}`;
+        document.getElementById('modal-price').textContent = `${T.unitPrice} $${opt.price}`;
       };
       sizeOpts.appendChild(btn);
     });
   } else {
     sizeGroup.style.display = 'none';
   }
+}
 
-  document.querySelectorAll('#flavor-opts .opt-chip, #spicy-opts .opt-chip, #cut-opts .opt-chip').forEach(b=>b.classList.remove('active'));
-  document.querySelector('[data-val="胡椒"]')?.classList.add('active');
-  document.querySelector('[data-val="不辣"]')?.classList.add('active');
-  document.querySelector('[data-val="不剪"]')?.classList.add('active');
-  document.getElementById('cut-group').style.display=item.id==='fillet'?'block':'none';
-  overlay.style.display='flex';
+function setupOptButtons() {
+  document.querySelectorAll('#flavor-opts .opt-chip, #spicy-opts .opt-chip, #cut-opts .opt-chip').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const type = this.dataset.type, val = this.dataset.val;
+      if (type === 'flavor') {
+        const idx = tempOpts.flavors.indexOf(val);
+        if (idx > -1) { tempOpts.flavors.splice(idx, 1); this.classList.remove('active'); }
+        else           { tempOpts.flavors.push(val);      this.classList.add('active'); }
+      } else if (type === 'spicy') {
+        tempOpts.spicy = val;
+        document.querySelectorAll('#spicy-opts .opt-chip').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      } else if (type === 'cut') {
+        tempOpts.cut = val;
+        document.querySelectorAll('#cut-opts .opt-chip').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      }
+    });
+  });
+}
+
+/* ══════════════════════════════════════
+   Open Modal
+══════════════════════════════════════ */
+function openModal(item) {
+  document.body.style.overflow = 'hidden';
+  currentItem = item;
+  currentQty  = 1;
+  const T = t();
+
+  if (item.options) {
+    tempOpts.size         = item.options[0].label;
+    tempOpts.currentPrice = item.options[0].price;
+  } else {
+    tempOpts.size         = null;
+    tempOpts.currentPrice = item.price;
+  }
+  tempOpts.flavors = ['胡椒'];  // always store raw zh keys
+  tempOpts.spicy   = '不辣';
+  tempOpts.cut     = '不剪';
+
+  const photoSrc = PHOTOS[item.id] || '';
+  const modalThumb = document.getElementById('modal-thumb');
+  modalThumb.src = photoSrc;
+  modalThumb.style.display = photoSrc ? 'block' : 'none';
+
+  document.getElementById('modal-name').textContent  = lang === 'en' ? (item.nameEn || item.name) : item.name;
+  document.getElementById('modal-price').textContent = `${T.unitPrice} $${tempOpts.currentPrice}`;
+  document.getElementById('modal-qty').textContent   = 1;
+
+  buildSizeChips(item);
+  buildModalChips(item);
+
+  overlay.style.display = 'flex';
 }
 
 function closeModal() {
-  document.body.style.overflow='';
-  overlay.style.display='none';
+  document.body.style.overflow = '';
+  overlay.style.display = 'none';
 }
 
 function changeQty(d) {
-  if(currentQty+d>=1){currentQty+=d;document.getElementById('modal-qty').textContent=currentQty;}
+  if (currentQty + d >= 1) {
+    currentQty += d;
+    document.getElementById('modal-qty').textContent = currentQty;
+  }
 }
 
+/* ══════════════════════════════════════
+   Confirm Add to Cart
+══════════════════════════════════════ */
 function confirmAdd() {
-  const parts=[...tempOpts.flavors];
-  if(tempOpts.spicy!=='不辣') parts.push(tempOpts.spicy);
-  if(currentItem.id==='fillet'&&tempOpts.cut==='要剪') parts.push('要剪');
-  const optStr=parts.length?parts.join(', '):'原味';
-  
-  const displayName = tempOpts.size ? `${currentItem.name} (${tempOpts.size})` : currentItem.name;
-  
-  const cartKey = currentItem.id + (tempOpts.size || '') + optStr;
-  const ex = cart.find(c => (c.id + (c.size || '') + c.optString) === cartKey);
+  // Build optRaw array (always raw zh keys)
+  const optRaw = [...tempOpts.flavors];
+  if (tempOpts.spicy !== '不辣') optRaw.push(tempOpts.spicy);
+  if (currentItem.id === 'fillet' && tempOpts.cut === '要剪') optRaw.push('要剪');
 
-  if(ex) {
+  const cartKey = currentItem.id + (tempOpts.size || '') + optRaw.join(',');
+  const ex = cart.find(c => c._key === cartKey);
+
+  if (ex) {
     ex.qty = Math.min(ex.qty + currentQty, 99);
   } else {
     cart.push({
-      id: currentItem.id,
-      name: currentItem.name,
-      size: tempOpts.size,
-      displayName: displayName,
-      price: tempOpts.currentPrice,
-      qty: Math.min(currentQty, 99),
-      optString: optStr,
-      photoKey: currentItem.id,
-      isCombo: currentItem.isCombo,
-      comboQty: currentItem.comboQty,
-      comboPrice: currentItem.comboPrice
+      _key:       cartKey,
+      id:         currentItem.id,
+      name:       currentItem.name,
+      nameEn:     currentItem.nameEn || currentItem.name,
+      size:       tempOpts.size,           // raw zh size key
+      price:      tempOpts.currentPrice,
+      qty:        Math.min(currentQty, 99),
+      optRaw:     optRaw,                  // raw zh option keys
+      photoKey:   currentItem.id,
+      isCombo:    currentItem.isCombo,
+      comboQty:   currentItem.comboQty,
+      comboPrice: currentItem.comboPrice,
     });
   }
+
   closeModal();
   updateCart();
-  showToast(`✓ 已加入 ${displayName}`);
+  showToast(t().toastAdded(itemDisplayName(currentItem, tempOpts.size)));
 }
 
+/* ══════════════════════════════════════
+   Cart render
+══════════════════════════════════════ */
 function updateCart() {
-  const badge=document.getElementById('cart-badge');
-  const totalItems=cart.reduce((s,c)=>s+c.qty,0);
-  if(!cart.length) {
-    badge.style.display='none';
-    document.getElementById('cart-list').innerHTML='<div class="cart-empty">尚未選擇品項<br>點擊上方菜單開始點餐</div>';
-    calcTotal(); return;
+  const T = t();
+  const badge = document.getElementById('cart-badge');
+  const totalItems = cart.reduce((s, c) => s + c.qty, 0);
+
+  if (!cart.length) {
+    badge.style.display = 'none';
+    const lines = T.cartEmpty.split('\n');
+    document.getElementById('cart-list').innerHTML =
+      `<div class="cart-empty">${lines[0]}<br>${lines[1]}</div>`;
+    calcTotal();
+    return;
   }
-  badge.style.display='';
-  badge.textContent=totalItems;
-  document.getElementById('cart-list').innerHTML=cart.map((c,i)=>`
-    <div class="cart-item">
-      <img class="ci-thumb" src="${PHOTOS[c.photoKey]||''}" alt="${c.name}" onerror="this.style.display='none'">
-      <div class="ci-info">
-        <div class="ci-name">${c.displayName}</div>
-        <div class="ci-opts">[ ${c.optString} ]</div>
-      </div>
-      <div class="ci-ctrl">
-        <button class="cq-btn minus" data-action="del" data-i="${i}">✕</button>
-        <button class="cq-btn minus" data-action="minus" data-i="${i}">−</button>
-        <div class="cq-qty">${c.qty}</div>
-        <button class="cq-btn" data-action="plus" data-i="${i}">＋</button>
-      </div>
-      <div class="ci-price">$${c.price*c.qty}</div>
-    </div>`).join('');
+
+  badge.style.display = '';
+  badge.textContent = totalItems;
+
+  document.getElementById('cart-list').innerHTML = cart.map((c, i) => {
+    const dispName = lang === 'en'
+      ? itemDisplayName({ name: c.name, nameEn: c.nameEn }, c.size)
+      : itemDisplayName({ name: c.name }, c.size);
+    const optLabel = translateOptStr(c.optRaw);
+    return `
+      <div class="cart-item">
+        <img class="ci-thumb" src="${PHOTOS[c.photoKey]||''}" alt="${c.name}" onerror="this.style.display='none'">
+        <div class="ci-info">
+          <div class="ci-name">${dispName}</div>
+          <div class="ci-opts">[ ${optLabel} ]</div>
+        </div>
+        <div class="ci-ctrl">
+          <button class="cq-btn minus" data-action="del"   data-i="${i}">✕</button>
+          <button class="cq-btn minus" data-action="minus" data-i="${i}">−</button>
+          <div class="cq-qty">${c.qty}</div>
+          <button class="cq-btn"       data-action="plus"  data-i="${i}">＋</button>
+        </div>
+        <div class="ci-price">$${c.price * c.qty}</div>
+      </div>`;
+  }).join('');
+
   calcTotal();
 }
 
-document.getElementById('cart-list').addEventListener('click', e=>{
-  const btn=e.target.closest('[data-action]');
-  if(!btn) return;
-  const i=parseInt(btn.dataset.i), act=btn.dataset.action;
-  if(act==='del') cart.splice(i,1);
-  else if(act==='minus'){if(cart[i].qty>1)cart[i].qty--;else cart.splice(i,1);}
-  else if(act==='plus') cart[i].qty=Math.min(cart[i].qty+1,99);
+document.getElementById('cart-list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const i = parseInt(btn.dataset.i), act = btn.dataset.action;
+  if      (act === 'del')   cart.splice(i, 1);
+  else if (act === 'minus') { if (cart[i].qty > 1) cart[i].qty--; else cart.splice(i, 1); }
+  else if (act === 'plus')  cart[i].qty = Math.min(cart[i].qty + 1, 99);
   updateCart();
 });
 
+/* ══════════════════════════════════════
+   Totals & Discounts
+══════════════════════════════════════ */
 function calcTotal() {
-  let total=0; currentDiscounts=[]; 
-  const idCounts={};
-  cart.forEach(c=>{idCounts[c.id]=(idCounts[c.id]||0)+c.qty; total+=c.price*c.qty;});
-  
-  for(const id in idCounts) {
-    const m=menu.find(x=>x.id===id);
-    if(m?.isCombo) {
-      const combos=Math.floor(idCounts[id]/m.comboQty);
-      if(combos>0) {
-        const disc=combos*m.comboQty*m.price-combos*m.comboPrice;
-        total-=disc;
-        currentDiscounts.push({name:m.name,amount:disc});
+  let total = 0;
+  currentDiscounts = [];
+  const idCounts = {};
+  cart.forEach(c => { idCounts[c.id] = (idCounts[c.id]||0) + c.qty; total += c.price * c.qty; });
+
+  for (const id in idCounts) {
+    const m = menu.find(x => x.id === id);
+    if (m?.isCombo) {
+      const combos = Math.floor(idCounts[id] / m.comboQty);
+      if (combos > 0) {
+        const disc = combos * m.comboQty * m.price - combos * m.comboPrice;
+        total -= disc;
+        currentDiscounts.push({ name: lang==='en'?(m.nameEn||m.name):m.name, nameZh:m.name, amount: disc });
       }
     }
   }
-  document.getElementById('total-price').textContent=total;
-  const dr=document.getElementById('disc-row');
-  dr.innerHTML=currentDiscounts.map(d=>`<span class="disc-tag">✓ ${d.name} 折 -$${d.amount}</span>`).join('');
+  document.getElementById('total-price').textContent = total;
+  const dr = document.getElementById('disc-row');
+  dr.innerHTML = currentDiscounts.map(d => `<span class="disc-tag">${t().discLabel(d.name, d.amount)}</span>`).join('');
 }
 
+/* ══════════════════════════════════════
+   Clear Cart
+══════════════════════════════════════ */
 function resetCart() {
-  if(!cart.length) return;
-  if(confirm('確定要清空購物車嗎？')){cart=[];updateCart();}
+  if (!cart.length) return;
+  if (confirm(t().confirmClear)) { cart = []; updateCart(); }
 }
 
+/* ══════════════════════════════════════
+   Toast
+══════════════════════════════════════ */
 let toastTimer;
 function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
+/* ══════════════════════════════════════
+   Send Order via LINE
+══════════════════════════════════════ */
 async function copyOrder() {
-  if(!cart.length){showToast('請先選擇品項');return;}
-  
-  // 1. 組合訂單文字
-  const lines=['📋 【馥味香 點餐明細】','─'.repeat(20)];
-  cart.forEach(c=>{lines.push(`● ${c.displayName} × ${c.qty}`);lines.push(`  └ [${c.optString}]`);});
-  lines.push('─'.repeat(20));
-  currentDiscounts.forEach(d=>lines.push(`✓ ${d.name} 折扣 -$${d.amount}`));
-  lines.push(`💰 合計：$${document.getElementById('total-price').textContent} 元`);
-  lines.push(`⏰ ${new Date().toLocaleTimeString('zh-TW')}`);
-  const text=lines.join('\n');
-  
-  // 2. 先將文字複製到剪貼簿 (避免部分手機瀏覽器阻擋跳轉時的備用方案)
-  try { await navigator.clipboard.writeText(text); }
-  catch { 
-    const a=document.getElementById('copy-area');
-    a.value=text; a.select(); document.execCommand('copy'); 
-  }
-  
-  showToast('訂單已產生！正在為您開啟 LINE...');
+  if (!cart.length) { showToast(t().toastEmpty); return; }
 
-  // 3. 設定你們的 LINE 官方帳號 ID
-  const lineId = '@187ppubm'; 
-  
-  // 4. 使用 LINE 官方提供的 oaMessage 連結格式跳轉
+  const T = t();
+  const sep = '─'.repeat(20);
+  const lines = [T.orderHeader, sep];
+
+  cart.forEach(c => {
+    const dispName = lang === 'en'
+      ? itemDisplayName({ name: c.name, nameEn: c.nameEn }, c.size)
+      : itemDisplayName({ name: c.name }, c.size);
+    const optLabel = translateOptStr(c.optRaw);
+    lines.push(`● ${dispName} × ${c.qty}`);
+    lines.push(`  └ [${optLabel}]`);
+  });
+  lines.push(sep);
+  currentDiscounts.forEach(d => lines.push(T.orderDisc(lang==='en'?(d.nameEn||d.nameZh):d.nameZh, d.amount)));
+  lines.push(T.orderTotal(document.getElementById('total-price').textContent));
+  lines.push(T.orderTime(new Date().toLocaleTimeString(lang==='en'?'en-US':'zh-TW')));
+
+  const text = lines.join('\n');
+
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const a = document.getElementById('copy-area');
+    a.value = text; a.select(); document.execCommand('copy');
+  }
+
+  showToast(T.toastLine);
+  const lineId = '@187ppubm';
   const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(text)}`;
-  
-  // 延遲 0.8 秒跳轉，讓使用者能看清楚提示訊息
-  setTimeout(() => {
-    window.location.href = lineUrl;
-  }, 800);
+  setTimeout(() => { window.location.href = lineUrl; }, 800);
 }
 
+/* ══════════════════════════════════════
+   Event Bindings
+══════════════════════════════════════ */
+document.getElementById('clear-btn').addEventListener('click', resetCart);
+document.getElementById('copy-btn').addEventListener('click', copyOrder);
+document.getElementById('btn-cancel').addEventListener('click', closeModal);
+document.getElementById('btn-confirm').addEventListener('click', confirmAdd);
+document.getElementById('qty-minus').addEventListener('click', () => changeQty(-1));
+document.getElementById('qty-plus').addEventListener('click', () => changeQty(1));
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 
-document.getElementById('clear-btn').addEventListener('click',resetCart);
-document.getElementById('copy-btn').addEventListener('click',copyOrder);
-document.getElementById('btn-cancel').addEventListener('click',closeModal);
-document.getElementById('btn-confirm').addEventListener('click',confirmAdd);
-document.getElementById('qty-minus').addEventListener('click',()=>changeQty(-1));
-document.getElementById('qty-plus').addEventListener('click',()=>changeQty(1));
-overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
-
+/* ══════════════════════════════════════
+   Init
+══════════════════════════════════════ */
 initTabs();
 initMenu();
 </script>
