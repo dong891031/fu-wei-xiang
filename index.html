@@ -727,6 +727,16 @@ html {
   color: #fff;
   border-color: #e8292f;
 }
+.cq-btn.edit {
+  border-color: #ffe8cc;
+  color: #d9480f;
+  background: #fff4e6;
+}
+.cq-btn.edit:hover {
+  background: #fd7e14;
+  color: #fff;
+  border-color: #fd7e14;
+}
 .cq-qty {
   font-size: 14px;
   font-weight: 800;
@@ -880,21 +890,24 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 16px;
 }
 .drawer-footer-label {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 .df-lbl-text {
   font-size: 12px;
   color: var(--dark-muted);
   font-weight: 700;
+  white-space: nowrap;
 }
 .df-lbl-price {
   font-size: 26px;
   font-weight: 900;
   color: var(--dark);
+  white-space: nowrap;
 }
 .df-lbl-price::before {
   content: '$';
@@ -902,7 +915,7 @@ html {
   margin-right: 1px;
 }
 .drawer-submit-btn {
-  width: 100%;
+  flex: 1;
   background: var(--primary);
   color: #fff;
   border: none;
@@ -925,6 +938,18 @@ html {
 }
 .drawer-submit-btn:active {
   transform: scale(0.98);
+}
+
+.disc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--success-light);
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* ── History Item ── */
@@ -1128,7 +1153,7 @@ html {
 .qty-ctrl {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 .qty-btn {
   width: 38px;
@@ -1147,10 +1172,28 @@ html {
   border-color: var(--dark-muted);
 }
 #modal-qty {
-  font-size: 20px;
-  font-weight: 900;
-  min-width: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  width: 54px;
+  height: 38px;
   text-align: center;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-warm);
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  color: var(--dark);
+  -moz-appearance: textfield;
+  transition: var(--transition);
+}
+#modal-qty:focus {
+  border-color: var(--primary);
+  background: var(--bg-white);
+}
+#modal-qty::-webkit-outer-spin-button,
+#modal-qty::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .modal-footer {
   display: flex;
@@ -1481,7 +1524,7 @@ html {
       <div class="qty-label" id="lbl-qty">數量</div>
       <div class="qty-ctrl">
         <button class="qty-btn" id="qty-minus">−</button>
-        <div id="modal-qty">1</div>
+        <input type="number" id="modal-qty" min="1" value="1" inputmode="numeric" pattern="[0-9]*">
         <button class="qty-btn" id="qty-plus">＋</button>
       </div>
     </div>
@@ -1521,6 +1564,7 @@ html {
   </div>
 </div>
 
+<textarea id="copy-area" style="position:absolute;left:-9999px;opacity:0;pointer-events:none" aria-hidden="true"></textarea>
 <div id="toast"></div>
 <script>
 /* ══════════════════════════════════════
@@ -1697,6 +1741,7 @@ let cart=[], currentItem=null, currentQty=1, tempOpts={}, currentDiscounts=[];
 let lang = 'zh';   // active language
 let currentPickupTime = '15'; // default 15 mins
 let lastCompiledOrderText = ''; // temporary storage for redirect
+let editingCartIdx = null;
 
 const overlay = document.getElementById('modal-overlay');
 
@@ -1986,18 +2031,39 @@ function buildModalChips(item) {
     });
   }
 
-  // Cut options (Fillet chicken chop only)
+  // Cut options (Fillet chicken chop & Hot dog)
   const cutContainer = document.getElementById('cut-opts');
   if (cutContainer) {
     cutContainer.innerHTML = '';
     const cutGroup = document.getElementById('cut-group');
-    if (cutGroup) cutGroup.style.display = item.id === 'fillet' ? 'block' : 'none';
+    const hasCut = item.id === 'fillet' || item.id === 'hotdog_s';
+    if (cutGroup) cutGroup.style.display = hasCut ? 'block' : 'none';
+    
+    // Dynamic label update
+    const lblCut = document.getElementById('lbl-cut');
+    if (lblCut) {
+      if (item.id === 'hotdog_s') {
+        lblCut.textContent = lang === 'en' ? 'Cut into pieces (choose one)' : '是否要剪（單選）';
+      } else {
+        lblCut.textContent = T.lblCut;
+      }
+    }
+
     Object.entries(T.cut).forEach(([val, label]) => {
       const btn = document.createElement('button');
       btn.className = 'opt-chip' + (tempOpts.cut === val ? ' active' : '');
       btn.dataset.type = 'cut';
       btn.dataset.val  = val;
-      btn.textContent  = label;
+      
+      let displayLabel = label;
+      if (item.id === 'hotdog_s') {
+        if (val === '不剪') {
+          displayLabel = lang === 'en' ? 'No cut' : '不剪';
+        } else if (val === '要剪') {
+          displayLabel = lang === 'en' ? 'Cut' : '幫我剪';
+        }
+      }
+      btn.textContent  = displayLabel;
       cutContainer.appendChild(btn);
     });
   }
@@ -2066,22 +2132,43 @@ function setupOptButtons() {
 /* ══════════════════════════════════════
    Customize Modal Overlay
 ══════════════════════════════════════ */
-function openModal(item) {
+function openModal(item, cartIdx = null) {
   document.body.style.overflow = 'hidden';
   currentItem = item;
-  currentQty  = 1;
   const T = t();
 
-  if (item.options) {
-    tempOpts.size         = item.options[0].label;
-    tempOpts.currentPrice = item.options[0].price;
+  if (cartIdx !== null) {
+    // 編輯模式：從購物車載入原有選擇
+    const cItem = cart[cartIdx];
+    currentQty = cItem.qty;
+    tempOpts.size = cItem.size;
+    tempOpts.currentPrice = cItem.price;
+
+    const ZH = I18N.zh;
+    // 調味：過濾出屬於 ZH.flavors 的選項
+    tempOpts.flavors = cItem.optRaw.filter(v => ZH.flavors[v] !== undefined);
+    
+    // 辣度：找到屬於 ZH.spicy 的選項，預設不辣
+    const spVal = cItem.optRaw.find(v => ZH.spicy[v] !== undefined);
+    tempOpts.spicy = spVal || '不辣';
+    
+    // 切法：找到屬於 ZH.cut 的選項，預設不剪
+    const cutVal = cItem.optRaw.find(v => ZH.cut[v] !== undefined);
+    tempOpts.cut = cutVal || '不剪';
   } else {
-    tempOpts.size         = null;
-    tempOpts.currentPrice = item.price;
+    // 新增模式：預設全新狀態
+    currentQty = 1;
+    if (item.options) {
+      tempOpts.size         = item.options[0].label;
+      tempOpts.currentPrice = item.options[0].price;
+    } else {
+      tempOpts.size         = null;
+      tempOpts.currentPrice = item.price;
+    }
+    tempOpts.flavors = ['胡椒'];
+    tempOpts.spicy   = '不辣';
+    tempOpts.cut     = '不剪';
   }
-  tempOpts.flavors = ['胡椒']; // default seasoning to pepper (raw key)
-  tempOpts.spicy   = '不辣';
-  tempOpts.cut     = '不剪';
 
   const photoSrc = PHOTOS[item.id] || '';
   const modalThumb = document.getElementById('modal-thumb');
@@ -2097,7 +2184,12 @@ function openModal(item) {
   if (modalPrice) modalPrice.textContent = `${T.unitPrice} $${tempOpts.currentPrice}`;
   
   const modalQty = document.getElementById('modal-qty');
-  if (modalQty) modalQty.textContent = 1;
+  if (modalQty) modalQty.value = currentQty;
+
+  const btnConfirm = document.getElementById('btn-confirm');
+  if (btnConfirm) {
+    btnConfirm.textContent = cartIdx !== null ? (lang === 'en' ? 'Confirm Update' : '確認修改') : T.addCart;
+  }
 
   buildSizeChips(item);
   buildModalChips(item);
@@ -2108,13 +2200,14 @@ function openModal(item) {
 function closeModal() {
   document.body.style.overflow = '';
   if (overlay) overlay.style.display = 'none';
+  editingCartIdx = null;
 }
 
 function changeQty(d) {
   if (currentQty + d >= 1) {
     currentQty += d;
     const modalQty = document.getElementById('modal-qty');
-    if (modalQty) modalQty.textContent = currentQty;
+    if (modalQty) modalQty.value = currentQty;
   }
 }
 
@@ -2124,34 +2217,61 @@ function changeQty(d) {
 function confirmAdd() {
   const optRaw = [...tempOpts.flavors];
   if (tempOpts.spicy !== '不辣') optRaw.push(tempOpts.spicy);
-  if (currentItem.id === 'fillet' && tempOpts.cut === '要剪') optRaw.push('要剪');
+  if ((currentItem.id === 'fillet' || currentItem.id === 'hotdog_s') && tempOpts.cut === '要剪') optRaw.push('要剪');
 
   const cartKey = currentItem.id + (tempOpts.size || '') + optRaw.join(',');
-  const ex = cart.find(c => c._key === cartKey);
+  const isEditing = editingCartIdx !== null;
 
-  if (ex) {
-    ex.qty = Math.min(ex.qty + currentQty, 99);
+  if (isEditing) {
+    // 編輯模式
+    const duplicateIdx = cart.findIndex((c, i) => c._key === cartKey && i !== editingCartIdx);
+    if (duplicateIdx > -1) {
+      cart[duplicateIdx].qty += currentQty;
+      cart.splice(editingCartIdx, 1);
+    } else {
+      const ex = cart[editingCartIdx];
+      ex._key = cartKey;
+      ex.size = tempOpts.size;
+      ex.price = tempOpts.currentPrice;
+      ex.qty = currentQty;
+      ex.optRaw = optRaw;
+    }
+    editingCartIdx = null;
   } else {
-    cart.push({
-      _key:       cartKey,
-      id:         currentItem.id,
-      name:       currentItem.name,
-      nameEn:     currentItem.nameEn || currentItem.name,
-      size:       tempOpts.size,           // raw size key
-      price:      tempOpts.currentPrice,
-      qty:        Math.min(currentQty, 99),
-      optRaw:     optRaw,                  // raw option keys
-      photoKey:   currentItem.id,
-      isCombo:    currentItem.isCombo,
-      comboQty:   currentItem.comboQty,
-      comboPrice: currentItem.comboPrice,
-    });
+    // 新增模式
+    const ex = cart.find(c => c._key === cartKey);
+    if (ex) {
+      ex.qty += currentQty;
+    } else {
+      cart.push({
+        _key:       cartKey,
+        id:         currentItem.id,
+        name:       currentItem.name,
+        nameEn:     currentItem.nameEn || currentItem.name,
+        size:       tempOpts.size,           // raw size key
+        price:      tempOpts.currentPrice,
+        qty:        currentQty,
+        optRaw:     optRaw,                  // raw option keys
+        photoKey:   currentItem.id,
+        isCombo:    currentItem.isCombo,
+        comboQty:   currentItem.comboQty,
+        comboPrice: currentItem.comboPrice,
+      });
+    }
   }
 
   closeModal();
   updateCart();
   initMenu(); // Rebuild menu grid to show updated counts instantly
-  showToast(t().toastAdded(itemDisplayName(currentItem, tempOpts.size)));
+  
+  const toastMsg = isEditing 
+    ? (lang === 'en' ? '✓ Item updated!' : '✓ 項目已更新！')
+    : t().toastAdded(itemDisplayName(currentItem, tempOpts.size));
+  showToast(toastMsg);
+
+  if (isEditing) {
+    toggleDrawer('cart', true);
+  }
 }
 
 /* ══════════════════════════════════════
@@ -2204,6 +2324,9 @@ function updateCart() {
             <button class="cq-btn minus" onclick="changeCartQty(${idx}, -1)">−</button>
             <span class="cq-qty">${c.qty}</span>
             <button class="cq-btn" onclick="changeCartQty(${idx}, 1)">＋</button>
+            <button class="cq-btn edit" onclick="editCartItem(${idx})" aria-label="Edit">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
             <button class="cq-btn del" onclick="removeCartItem(${idx})" aria-label="Delete">
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
             </button>
@@ -2220,7 +2343,7 @@ function changeCartQty(idx, d) {
   const item = cart[idx];
   if (!item) return;
   if (item.qty + d >= 1) {
-    item.qty = Math.min(item.qty + d, 99);
+    item.qty += d;
   } else {
     cart.splice(idx, 1);
   }
@@ -2232,6 +2355,16 @@ function removeCartItem(idx) {
   cart.splice(idx, 1);
   updateCart();
   initMenu();
+}
+
+function editCartItem(idx) {
+  const cItem = cart[idx];
+  if (!cItem) return;
+  toggleDrawer('cart', false);
+  const menuItem = menu.find(m => m.id === cItem.id);
+  if (!menuItem) return;
+  editingCartIdx = idx;
+  openModal(menuItem, idx);
 }
 
 function calcTotal() {
@@ -2571,6 +2704,26 @@ if (qtyPlus) qtyPlus.addEventListener('click', () => changeQty(1));
 
 if (overlay) {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+}
+
+const modalQtyInput = document.getElementById('modal-qty');
+if (modalQtyInput) {
+  modalQtyInput.addEventListener('input', function() {
+    let val = parseInt(this.value, 10);
+    if (isNaN(val) || val < 1) {
+      currentQty = 1;
+    } else {
+      currentQty = val;
+    }
+  });
+  modalQtyInput.addEventListener('blur', function() {
+    let val = parseInt(this.value, 10);
+    if (isNaN(val) || val < 1) {
+      val = 1;
+    }
+    currentQty = val;
+    this.value = val;
+  });
 }
 
 /* ══════════════════════════════════════
