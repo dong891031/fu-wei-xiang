@@ -1730,7 +1730,7 @@ const menu = [
     options:[{label:'小',price:50},{label:'大',price:100}] },
   { id:'fries',   name:'薯條',   nameEn:'French Fries',        category:'酥脆點心 & 分享餐',
     options:[{label:'小',price:50},{label:'大',price:100}] },
-  { id:'rice_d',  name:'米疙瘩', nameEn:'Fried Chewy Rice Cak',      price:35, category:'酥脆點心 & 分享餐' },
+  { id:'rice_d',  name:'米疙瘩', nameEn:'Fried Chewy Rice Cake',      price:35, category:'酥脆點心 & 分享餐' },
   { id:'meat_b',  name:'小肉豆', nameEn:'Mini Smoked Sausages',          price:30, category:'酥脆點心 & 分享餐' },
   { id:'hash',    name:'微笑薯餅',nameEn:'Smiley Potato Bites',  price:50, category:'酥脆點心 & 分享餐' },
   { id:'hotdog_s',name:'熱狗腸', nameEn:'Hot Dogs',     price:25, category:'酥脆點心 & 分享餐' },
@@ -1832,6 +1832,7 @@ function setLang(newLang) {
 
   // Rebuild modal chips if open
   if (overlay && overlay.style.display === 'flex' && currentItem) {
+    buildSizeChips(currentItem);
     buildModalChips(currentItem);
   }
 
@@ -1936,6 +1937,9 @@ function initMenu() {
     card.addEventListener('click', () => openModal(item));
     grid.appendChild(card);
   });
+
+  // 重建菜單後，重新套用目前的搜尋篩選條件，避免篩選狀態被清除
+  handleSearch();
 }
 
 /* ══════════════════════════════════════
