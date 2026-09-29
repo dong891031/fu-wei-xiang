@@ -994,8 +994,14 @@ html {
   font-weight: 600;
   line-height: 1.5;
 }
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .history-reorder-btn {
-  align-self: flex-end;
+  min-height: 40px;
+  white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1013,6 +1019,28 @@ html {
 .history-reorder-btn:hover {
   background: var(--primary);
   color: #fff;
+}
+.history-delete-btn, .history-clear-btn {
+  border: 1px solid var(--border-color);
+  border-radius: 99px;
+  background: var(--bg-white);
+  color: var(--dark-light);
+  padding: 8px 14px;
+  min-height: 40px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.history-delete-btn:hover, .history-clear-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.history-note {
+  padding: 12px 20px 0;
+  color: var(--dark-muted);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 /* ── Modal Design ── */
@@ -1479,10 +1507,14 @@ html {
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline><line x1="12" y1="7" x2="12" y2="12"></line><line x1="12" y1="12" x2="16" y2="14"></line></svg>
       <span id="history-title-txt">歷史訂單</span>
     </div>
-    <button class="drawer-close" onclick="toggleDrawer('history', false)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
+    <div class="history-actions">
+      <button class="history-clear-btn" id="history-clear-btn" onclick="clearOrderHistory()" style="display:none">清空紀錄</button>
+      <button class="drawer-close" onclick="toggleDrawer('history', false)" aria-label="關閉">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
   </div>
+  <p class="history-note" id="history-note" style="display:none">只儲存在這台裝置；重訂時請重新確認取餐時間與備註。刪除不會取消 LINE 訊息。</p>
   <div class="drawer-body" id="history-list">
     <div class="cart-empty" id="history-empty-txt">尚無歷史訂單紀錄</div>
   </div>
@@ -1613,6 +1645,14 @@ const I18N = {
     historyEmpty: '尚無歷史訂單紀錄',
     historyBtn: '歷史訂單',
     historyReorder: '一鍵重訂',
+    historyDelete: '刪除',
+    historyClear: '清空紀錄',
+    historyNote: '只儲存在這台裝置；重訂時請重新確認取餐時間與備註。刪除不會取消 LINE 訊息。',
+    confirmDeleteHistory: '刪除這筆本機歷史紀錄？已傳送的 LINE 訊息不會取消。',
+    confirmClearHistory: '清空這台裝置的所有歷史紀錄？已傳送的 LINE 訊息不會取消。',
+    confirmReplaceCart: '重訂會取代目前購物車的品項，確定繼續嗎？',
+    historyUnavailable: '舊訂單的品項已下架，無法重訂。',
+    historyPartial: '部分品項已下架，請檢查購物車。',
     custInfo: '取餐資訊',
     pickupTime: '預計取餐時間 *',
     pickupMin: (m) => `${m}分鐘後`,
@@ -1671,6 +1711,14 @@ const I18N = {
     historyEmpty: 'No history orders found',
     historyBtn: 'History',
     historyReorder: 'Re-order',
+    historyDelete: 'Delete',
+    historyClear: 'Clear history',
+    historyNote: 'Saved on this device only. Check pickup time and notes when reordering. Deleting does not cancel a LINE message.',
+    confirmDeleteHistory: 'Delete this local history entry? Sent LINE messages are not cancelled.',
+    confirmClearHistory: 'Clear all local history? Sent LINE messages are not cancelled.',
+    confirmReplaceCart: 'Reordering replaces the items in your cart. Continue?',
+    historyUnavailable: 'This order contains only unavailable items.',
+    historyPartial: 'Some items are unavailable. Check your cart.',
     custInfo: 'Pickup Information',
     pickupTime: 'Pickup Time *',
     pickupMin: (m) => `In ${m} mins`,
@@ -1789,7 +1837,8 @@ function setLang(newLang) {
   document.getElementById('lbl-bar-label').textContent = T.barLabel;
   document.getElementById('txt-send-line').textContent = T.sendLine;
   document.getElementById('btn-cancel').textContent  = T.cancel;
-  document.getElementById('btn-confirm').textContent = T.addCart;
+  document.getElementById('btn-confirm').textContent = editingCartIdx !== null
+    ? (newLang === 'en' ? 'Confirm Update' : '確認修改') : T.addCart;
   document.getElementById('lbl-size').textContent    = T.lblSize;
   document.getElementById('lbl-flavor').textContent  = T.lblFlavor;
   document.getElementById('lbl-spicy').textContent   = T.lblSpicy;
@@ -1825,6 +1874,8 @@ function setLang(newLang) {
 
   // Update dynamic translations inside drawers, popups
   document.getElementById('history-title-txt').textContent = T.historyTitle;
+  document.getElementById('history-clear-btn').textContent = T.historyClear;
+  document.getElementById('history-note').textContent = T.historyNote;
 
   // Rebuild tabs & menu grid
   document.getElementById('cat-tabs').innerHTML = '';
@@ -1834,6 +1885,9 @@ function setLang(newLang) {
 
   // Rebuild modal chips if open
   if (overlay && overlay.style.display === 'flex' && currentItem) {
+    document.getElementById('modal-name').textContent = newLang === 'en'
+      ? (currentItem.nameEn || currentItem.name) : currentItem.name;
+    document.getElementById('modal-price').textContent = `${T.unitPrice} $${tempOpts.currentPrice}`;
     buildSizeChips(currentItem);
     buildModalChips(currentItem);
   }
@@ -2506,22 +2560,38 @@ function loadCustomerInfo() {
   }
 }
 
-function saveOrderToHistory(orderText, orderCart, totalPriceVal) {
-  let hist = [];
-  const rawHist = localStorage.getItem('fws_order_history');
-  if (rawHist) {
-    try { hist = JSON.parse(rawHist); } catch (e) {}
+function readOrderHistory() {
+  try {
+    const history = JSON.parse(localStorage.getItem('fws_order_history') || '[]');
+    return Array.isArray(history) ? history : [];
+  } catch {
+    return [];
   }
+}
 
-  // Push new order to front, maximum 5 items
+function saveOrderToHistory(orderText, orderCart, totalPriceVal) {
+  const hist = readOrderHistory();
   hist.unshift({
     timestamp: new Date().toISOString(),
     total: totalPriceVal,
     cart: orderCart,
     orderText: orderText
   });
-  hist = hist.slice(0, 5);
+  localStorage.setItem('fws_order_history', JSON.stringify(hist.slice(0, 5)));
+  renderHistory();
+}
+
+function removeHistoryOrder(idx) {
+  const hist = readOrderHistory();
+  if (!hist[idx] || !confirm(t().confirmDeleteHistory)) return;
+  hist.splice(idx, 1);
   localStorage.setItem('fws_order_history', JSON.stringify(hist));
+  renderHistory();
+}
+
+function clearOrderHistory() {
+  if (!readOrderHistory().length || !confirm(t().confirmClearHistory)) return;
+  localStorage.removeItem('fws_order_history');
   renderHistory();
 }
 
@@ -2530,26 +2600,18 @@ function renderHistory() {
   const listEl = document.getElementById('history-list');
   if (!listEl) return;
 
-  let hist = [];
-  const rawHist = localStorage.getItem('fws_order_history');
-  if (rawHist) {
-    try { hist = JSON.parse(rawHist); } catch (e) {}
-  }
-
+  const hist = readOrderHistory();
+  document.getElementById('history-clear-btn').style.display = hist.length ? 'block' : 'none';
+  document.getElementById('history-note').style.display = hist.length ? 'block' : 'none';
   if (!hist.length) {
     listEl.innerHTML = `<div class="cart-empty">${T.historyEmpty}</div>`;
     return;
   }
 
   listEl.innerHTML = hist.map((item, idx) => {
-    const formattedDate = new Date(item.timestamp).toLocaleString('zh-TW', {
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+    const formattedDate = new Date(item.timestamp).toLocaleString(lang === 'en' ? 'en-US' : 'zh-TW', {
+      month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
     });
-
     const summaryText = item.cart.map(c => {
       const sizeLabel = c.size ? `(${T.sizes[c.size] || c.size})` : '';
       const cName = lang === 'en' ? (c.nameEn || c.name) : c.name;
@@ -2566,26 +2628,23 @@ function renderHistory() {
           <div class="history-total">$${item.total}</div>
         </div>
         <div class="history-body-summary">${summaryText}</div>
-        <button class="history-reorder-btn" onclick="loadHistoryOrder(${idx})">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          ${T.historyReorder}
-        </button>
+        <div class="history-actions">
+          <button class="history-delete-btn" onclick="removeHistoryOrder(${idx})" aria-label="${T.historyDelete}">${T.historyDelete}</button>
+          <button class="history-reorder-btn" onclick="loadHistoryOrder(${idx})">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            ${T.historyReorder}
+          </button>
+        </div>
       </div>`;
   }).join('');
 }
 
 function loadHistoryOrder(idx) {
-  let hist = [];
-  const rawHist = localStorage.getItem('fws_order_history');
-  if (rawHist) {
-    try { hist = JSON.parse(rawHist); } catch (e) {}
-  }
-  const item = hist[idx];
+  const item = readOrderHistory()[idx];
   if (!item) return;
 
-  // Refresh products and prices from the current menu before reordering.
-  // Old history can contain products or sizes that are no longer sold.
-  cart = item.cart.flatMap(saved => {
+  // Refresh product information and prices; don't discard a cart when nothing is available.
+  const restoredCart = item.cart.flatMap(saved => {
     const product = menu.find(m => m.id === saved.id);
     if (!product || !Number.isSafeInteger(saved.qty) || saved.qty < 1) return [];
     const size = product.options ? product.options.find(o => o.label === saved.size) : null;
@@ -2601,12 +2660,17 @@ function loadHistoryOrder(idx) {
       comboPrice: product.comboPrice
     }];
   });
-  
+  if (!restoredCart.length) {
+    showToast(t().historyUnavailable);
+    return;
+  }
+  if (cart.length && !confirm(t().confirmReplaceCart)) return;
+  cart = restoredCart;
   updateCart();
-  initMenu(); // sync card highlights
+  initMenu();
   toggleDrawer('history', false);
   toggleDrawer('cart', true);
-  showToast(t().historyAdded);
+  showToast(restoredCart.length < item.cart.length ? t().historyPartial : t().historyAdded);
 }
 
 /* ══════════════════════════════════════
