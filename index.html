@@ -1465,7 +1465,7 @@ html {
       </div>
       <button class="drawer-submit-btn" id="copy-btn" onclick="copyOrder()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        <span id="txt-send-line">送出訂單至 LINE</span>
+        <span id="txt-send-line">複製訂單並開啟 LINE</span>
       </button>
     </div>
   </div>
@@ -1577,7 +1577,7 @@ const I18N = {
     clearBtn:       '清空',
     cartEmpty:      '尚未選擇品項\n點擊上方菜單開始點餐',
     barLabel:       '合計金額',
-    sendLine:       '送出訂單至 LINE',
+    sendLine:       '複製訂單並開啟 LINE',
     lblSize:        '規格（單選）',
     lblFlavor:      '基本調味（可複選）',
     lblSpicy:       '辣度（單選）',
@@ -1622,7 +1622,8 @@ const I18N = {
     guideTitle: '📋 訂單已成功複製！',
     guideStep1: '訂單明細已複製到您的剪貼簿',
     guideStep2: '即將為您開啟 LINE 官方帳號',
-    guideStep3: '請在聊天室對話框中「貼上」並送出',
+    guideStep3: '請在 LINE 聊天室貼上並送出，店家才會收到訂單',
+    copyFailed: '複製失敗，請到 LINE 確認訂單文字後再送出',
     guideSubmit: '確認並前往 LINE 貼上訂單',
     guideClose: '關閉視窗',
     historyAdded: '✓ 已載入歷史訂單內容！',
@@ -1634,7 +1635,7 @@ const I18N = {
     clearBtn:       'Clear',
     cartEmpty:      'No items yet\nTap the menu above to start ordering',
     barLabel:       'Total',
-    sendLine:       'Send Order via LINE',
+    sendLine:       'Copy Order & Open LINE',
     lblSize:        'Size (choose one)',
     lblFlavor:      'Seasoning (multiple)',
     lblSpicy:       'Spice Level (choose one)',
@@ -1679,7 +1680,8 @@ const I18N = {
     guideTitle: '📋 Order Copied Successfully!',
     guideStep1: 'Order details copied to clipboard',
     guideStep2: 'Opening LINE Official Account...',
-    guideStep3: 'Please "Paste" the message in chat and send',
+    guideStep3: 'Paste and send the message in LINE so the shop receives your order',
+    copyFailed: 'Copy failed. Check the order text in LINE before sending',
     guideSubmit: 'Confirm & Open LINE to Paste',
     guideClose: 'Close Window',
     historyAdded: '✓ History order loaded!',
@@ -1691,22 +1693,22 @@ const I18N = {
    Menu Data
 ══════════════════════════════════════ */
 const PHOTOS = {
-  xiangsuji: './images/香酥雞.png',
-  paigu:     './images/排骨酥.png',
-  sanjiao:   './images/三角骨.png',
-  ruangu:    './images/軟骨酥.png',
-  jianjian:  './images/嫩肩骨.png',
-  wing:      './images/三節翅.png',
-  drum:      './images/小棒腿.png',
-  fillet:    './images/雞排.png',
-  hotdog_b:  './images/裹粉熱狗.png',
-  sweetfry:  './images/地瓜薯條.png',
-  onion:     './images/圈圈.png',
-  fries:     './images/薯條.png',
-  rice_d:    './images/米疙瘩.png',
-  meat_b:    './images/小肉豆.png',
-  hash:      './images/微笑薯餅.png',
-  hotdog_s:  './images/熱狗腸.png',
+  xiangsuji: './images/香酥雞.webp',
+  paigu:     './images/排骨酥.webp',
+  sanjiao:   './images/三角骨.webp',
+  ruangu:    './images/軟骨酥.webp',
+  jianjian:  './images/嫩肩骨.webp',
+  wing:      './images/三節翅.webp',
+  drum:      './images/小棒腿.webp',
+  fillet:    './images/雞排.webp',
+  hotdog_b:  './images/裹粉熱狗.webp',
+  sweetfry:  './images/地瓜薯條.webp',
+  onion:     './images/圈圈.webp',
+  fries:     './images/薯條.webp',
+  rice_d:    './images/米疙瘩.webp',
+  meat_b:    './images/小肉豆.webp',
+  hash:      './images/微笑薯餅.webp',
+  hotdog_s:  './images/熱狗腸.webp',
 };
 
 const menu = [
@@ -2218,12 +2220,16 @@ function changeQty(d) {
 /* ══════════════════════════════════════
    Confirm Product & Add to Cart
 ══════════════════════════════════════ */
+function cartItemKey(id, size, options) {
+  return JSON.stringify([id, size || null, [...options].sort()]);
+}
+
 function confirmAdd() {
   const optRaw = [...tempOpts.flavors];
   if (tempOpts.spicy !== '不辣') optRaw.push(tempOpts.spicy);
   if ((currentItem.id === 'fillet' || currentItem.id === 'hotdog_s') && tempOpts.cut === '要剪') optRaw.push('要剪');
 
-  const cartKey = currentItem.id + (tempOpts.size || '') + optRaw.join(',');
+  const cartKey = cartItemKey(currentItem.id, tempOpts.size, optRaw);
   const isEditing = editingCartIdx !== null;
 
   if (isEditing) {
@@ -2371,33 +2377,40 @@ function editCartItem(idx) {
   openModal(menuItem, idx);
 }
 
-function calcTotal() {
+function calculateOrder(cartItems) {
   let subtotal = 0;
-  currentDiscounts = [];
+  const discounts = [];
+  const comboQuantities = new Map();
 
-  cart.forEach(c => {
+  cartItems.forEach(c => {
     subtotal += c.price * c.qty;
-    if (c.isCombo && c.qty >= c.comboQty) {
-      const combos = Math.floor(c.qty / c.comboQty);
-      const normalPrice = c.price * c.comboQty;
-      const discountVal = (normalPrice - c.comboPrice) * combos;
-      if (discountVal > 0) {
-        currentDiscounts.push({
-          id: c.id,
-          name: c.name,
-          nameEn: c.nameEn,
-          nameZh: c.name,
-          amount: discountVal
-        });
-      }
-    }
+    if (!c.isCombo) return;
+    const group = comboQuantities.get(c.id) || { item: c, qty: 0 };
+    group.qty += c.qty;
+    comboQuantities.set(c.id, group);
   });
 
-  const totalDiscount = currentDiscounts.reduce((sum, d) => sum + d.amount, 0);
-  const grandTotal = Math.max(subtotal - totalDiscount, 0);
+  comboQuantities.forEach(({ item, qty }) => {
+    const combos = Math.floor(qty / item.comboQty);
+    const amount = (item.price * item.comboQty - item.comboPrice) * combos;
+    if (amount > 0) discounts.push({
+      id: item.id, name: item.name, nameEn: item.nameEn,
+      nameZh: item.name, amount
+    });
+  });
+
+  return {
+    discounts,
+    total: Math.max(subtotal - discounts.reduce((sum, d) => sum + d.amount, 0), 0)
+  };
+}
+
+function calcTotal() {
+  const result = calculateOrder(cart);
+  currentDiscounts = result.discounts;
 
   const totalPriceEl = document.getElementById('total-price');
-  if (totalPriceEl) totalPriceEl.textContent = grandTotal;
+  if (totalPriceEl) totalPriceEl.textContent = result.total;
 
   // Render discounts
   const discRow = document.getElementById('disc-row');
@@ -2570,8 +2583,24 @@ function loadHistoryOrder(idx) {
   const item = hist[idx];
   if (!item) return;
 
-  // Overwrite current cart with history items
-  cart = JSON.parse(JSON.stringify(item.cart)); // deep clone
+  // Refresh products and prices from the current menu before reordering.
+  // Old history can contain products or sizes that are no longer sold.
+  cart = item.cart.flatMap(saved => {
+    const product = menu.find(m => m.id === saved.id);
+    if (!product || !Number.isSafeInteger(saved.qty) || saved.qty < 1) return [];
+    const size = product.options ? product.options.find(o => o.label === saved.size) : null;
+    if (product.options && !size) return [];
+    const optRaw = Array.isArray(saved.optRaw) ? saved.optRaw : [];
+    return [{
+      _key: cartItemKey(product.id, size ? size.label : null, optRaw),
+      id: product.id, name: product.name, nameEn: product.nameEn,
+      size: size ? size.label : null,
+      price: size ? size.price : product.price,
+      qty: saved.qty, optRaw: [...optRaw], photoKey: product.id,
+      isCombo: product.isCombo, comboQty: product.comboQty,
+      comboPrice: product.comboPrice
+    }];
+  });
   
   updateCart();
   initMenu(); // sync card highlights
@@ -2650,20 +2679,21 @@ async function copyOrder() {
   const text = lines.join('\n');
   lastCompiledOrderText = text;
 
-  // Copy to Clipboard
-  try { 
-    await navigator.clipboard.writeText(text); 
+  // Clipboard access can fail in some LINE in-app browsers; the LINE URL still carries the order.
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
   } catch {
     const a = document.getElementById('copy-area');
     if (a) {
-      a.value = text; 
-      a.select(); 
-      document.execCommand('copy');
+      a.value = text;
+      a.select();
+      try { copied = document.execCommand('copy'); } catch { copied = false; }
     }
   }
-
-  // Save successful order into customer history
-  saveOrderToHistory(text, cart, grandTotal);
+  document.getElementById('lbl-guide-title').textContent = copied ? T.guideTitle : T.copyFailed;
+  document.getElementById('lbl-guide-step1').textContent = copied ? T.guideStep1 : T.copyFailed;
 
   // Open guide modal
   const guideOverlay = document.getElementById('guide-overlay');
@@ -2680,6 +2710,7 @@ function closeGuide() {
 }
 
 function redirectToLine() {
+  saveOrderToHistory(lastCompiledOrderText, cart.map(c => ({ ...c, optRaw: [...c.optRaw] })), calculateOrder(cart).total);
   closeGuide();
   toggleDrawer('cart', false);
   showToast(t().toastLine);
